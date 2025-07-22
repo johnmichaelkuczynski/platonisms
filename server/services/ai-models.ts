@@ -36,22 +36,25 @@ function getModelDisplayName(model: AIModel): string {
 function getPaperContext(): string {
   const fullContent = getFullDocumentContent();
   
-  return `You are an AI assistant for an academic learning platform focused on "Introduction to Academic Writing" by Zhi Systems.
+  return `You are an AI assistant for an academic learning platform focused on "Human Freedom: Its Scope and Limits" by J.-M. Kuczynski.
 
-This document is a comprehensive academic writing curriculum covering fundamental principles of academic communication. The content includes discussion assignments, essay requirements, source evaluation, argument analysis, and professional writing standards.
+This document is a comprehensive philosophy curriculum covering fundamental concepts of human freedom, determinism, and moral responsibility. The content includes lectures on compatibilism, incompatibilism, predictability, Frankfurt cases, experimental philosophy, and the nature of human agency.
 
 CURRENT DOCUMENT CONTENT:
 ${fullContent}
 
 You should help users understand:
-- Principles of academic writing (clarity, evidence, analysis)
-- Source evaluation and citation methods
-- Argument construction and counterargument strategies
-- Academic vs. popular writing differences
-- Professional writing standards and conventions
-- Essay structure and development techniques
+- Core concepts of determinism and free will
+- Compatibilist and incompatibilist theories
+- The relationship between predictability and freedom
+- Moral responsibility and causal determinism
+- Frankfurt cases and alternative possibilities
+- Experimental philosophy (Libet experiments)
+- The nature of human values and agency
+- Mental illness and its relationship to freedom
+- Existentialist approaches to human freedom
 
-Answer questions about the academic writing curriculum, provide clear explanations of writing concepts, and help users develop their academic communication skills. Focus on practical application, clear examples, and encouraging strong academic writing practices.`;
+Answer questions about the philosophy curriculum, provide clear explanations of philosophical concepts, and help users develop their understanding of human freedom and moral responsibility. Focus on conceptual clarity, logical reasoning, and the practical implications of these philosophical ideas for human life and society.`;
 }
 
 // Helper function to clean markdown and improve formatting
@@ -144,14 +147,14 @@ Please rewrite the text according to these instructions:`;
 }
 
 export async function generatePassageExplanation(model: AIModel, passage: string): Promise<string> {
-  const systemPrompt = `You are an expert academic writing instructor for "Introduction to Academic Writing" by Zhi Systems. 
+  const systemPrompt = `You are an expert philosophy instructor for "Human Freedom: Its Scope and Limits" by J.-M. Kuczynski. 
 
 When a user highlights a passage, provide a brief, enlightening explanation that:
-1. Clarifies the key academic writing concepts in the passage
-2. Explains the writing principles or techniques being discussed
-3. Connects it to broader themes in academic communication
-4. Engages the user with practical insights for their own writing
-5. Uses accessible language while maintaining academic rigor
+1. Clarifies the key philosophical concepts in the passage (determinism, free will, moral responsibility, etc.)
+2. Explains the philosophical arguments or theories being discussed
+3. Connects it to broader themes in philosophy of mind and ethics
+4. Engages the user with practical insights about human agency and freedom
+5. Uses accessible language while maintaining philosophical rigor
 
 CRITICAL FORMATTING RULES:
 - Write in plain text format ONLY
@@ -160,13 +163,13 @@ CRITICAL FORMATTING RULES:
 - Write as if for publication in a book or formal document
 - No bullet points, numbered lists, or formatting markup of any kind
 
-Keep your explanation concise but insightful (3-4 sentences). Focus on helping the user understand the writing principles and how to apply them effectively.`;
+Keep your explanation concise but insightful (3-4 sentences). Focus on helping the user understand the philosophical concepts and their implications for human freedom.`;
 
-  const prompt = `Explain this passage from the academic writing curriculum:
+  const prompt = `Explain this passage from the philosophy of freedom curriculum:
 
 "${passage}"
 
-Provide a brief, enlightening explanation that helps the user understand the writing principles and their practical application. Use plain text only with no formatting.`;
+Provide a brief, enlightening explanation that helps the user understand the philosophical concepts and their implications for human freedom and moral responsibility. Use plain text only with no formatting.`;
 
   try {
     let result: string;
@@ -209,15 +212,15 @@ Provide a brief, enlightening explanation that helps the user understand the wri
 }
 
 export async function generatePassageDiscussionResponse(model: AIModel, userMessage: string, passage: string, conversationHistory: any[] = []): Promise<string> {
-  const systemPrompt = `You are an expert philosophical guide for Wittgenstein's "Tractatus Logico-Philosophicus". 
+  const systemPrompt = `You are an expert philosophical guide for "Human Freedom: Its Scope and Limits" by J.-M. Kuczynski. 
 
 You are discussing a specific passage with the user. Engage in thoughtful dialogue by:
 1. Responding directly to their questions and thoughts
 2. Building on the conversation history
 3. Referencing the specific passage being discussed
-4. Providing philosophical insights and clarifications
+4. Providing philosophical insights about freedom, determinism, and moral responsibility
 5. Asking engaging follow-up questions when appropriate
-6. Maintaining focus on Wittgenstein's ideas and their implications
+6. Maintaining focus on concepts of human freedom and their implications
 
 CRITICAL FORMATTING RULES:
 - Write in plain text format ONLY
@@ -240,7 +243,7 @@ Keep responses conversational but intellectually rigorous. Help the user deepen 
 
   const prompt = `${conversationContext}User: ${userMessage}
 
-Respond thoughtfully to continue our discussion about this passage from the Tractatus. Use plain text only with no formatting.`;
+Respond thoughtfully to continue our discussion about this passage on human freedom and philosophy. Use plain text only with no formatting.`;
 
   try {
     let result: string;

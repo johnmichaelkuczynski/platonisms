@@ -1,53 +1,47 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { bookContent as paperContent } from "@shared/book-content";
 
-// Create a table of contents based on the Writing 101 course content
+// Create a table of contents based on the Human Freedom philosophy course content
 const createTableOfContents = () => {
   const tableOfContents: Array<{ id: string; title: string; level: number }> = [
-    // Academic Writing Principles
-    { id: "academic-writing-principles", title: "Academic Writing Principles", level: 0 },
-    { id: "clarity", title: "Clarity", level: 1 },
-    { id: "evidence", title: "Evidence", level: 1 },
-    { id: "analysis", title: "Analysis", level: 1 },
+    // Core Philosophical Concepts
+    { id: "lecture-1", title: "Lecture 1: Determinism", level: 0 },
+    { id: "lecture-2", title: "Lecture 2: Predictability", level: 0 },
+    { id: "lecture-3", title: "Lecture 3: Compatibilism", level: 0 },
+    { id: "lecture-4", title: "Lecture 4: Incompatibilism", level: 0 },
     
-    // Discussion Assignment 1
-    { id: "discussion-1", title: "Discussion 1: Understanding Academic Writing", level: 0 },
+    // Moral Responsibility
+    { id: "lecture-5", title: "Lecture 5: Determinism and Moral Responsibility", level: 0 },
+    { id: "lecture-6", title: "Lecture 6: Predictability and Moral Responsibility", level: 0 },
+    { id: "lecture-7", title: "Lecture 7: Free Will and Causal Necessity", level: 0 },
     
-    // Essay 1
-    { id: "essay-1", title: "Essay 1: Academic vs. Popular Writing", level: 0 },
-    { id: "essay-1-section-1", title: "Section 1: Academic vs. Popular", level: 1 },
-    { id: "essay-1-section-2", title: "Section 2: Translation Exercise", level: 1 },
+    // Free Will Analysis
+    { id: "lecture-8", title: "Lecture 8: The Coherence of Free Will", level: 0 },
+    { id: "lecture-9", title: "Lecture 9: Alternative Conceptions of Free Will", level: 0 },
     
-    // Source Types and Evidence
-    { id: "discussion-2", title: "Discussion 2: Types of Academic Evidence", level: 0 },
-    { id: "primary-sources", title: "Primary Sources", level: 1 },
-    { id: "secondary-sources", title: "Secondary Sources", level: 1 },
-    { id: "tertiary-sources", title: "Tertiary Sources", level: 1 },
+    // Experimental Philosophy
+    { id: "lecture-10", title: "Lecture 10: The Libet Experiment - Description and Data", level: 0 },
+    { id: "lecture-11", title: "Lecture 11: The Libet Experiment - Analysis", level: 0 },
+    { id: "lecture-12", title: "Lecture 12: Neuroscience and Free Will", level: 0 },
     
-    // Essay 2
-    { id: "essay-2", title: "Essay 2: Source Evaluation", level: 0 },
-    { id: "essay-2-introduction", title: "Introduction", level: 1 },
-    { id: "essay-2-analysis", title: "Source Analysis", level: 1 },
-    { id: "essay-2-comparison", title: "Comparative Analysis", level: 1 },
+    // Frankfurt Cases
+    { id: "lecture-13", title: "Lecture 13: Frankfurt's Analysis of Freedom", level: 0 },
+    { id: "lecture-14", title: "Lecture 14: Problems with Frankfurt's Analysis", level: 0 },
     
-    // Argument Analysis
-    { id: "discussion-3", title: "Discussion 3: Academic Arguments", level: 0 },
-    { id: "premises", title: "Premises", level: 1 },
-    { id: "logical-reasoning", title: "Logical Reasoning", level: 1 },
-    { id: "conclusions", title: "Conclusions", level: 1 },
+    // Nature of Freedom
+    { id: "lecture-15", title: "Lecture 15: The Actual Nature of Human Freedom", level: 0 },
+    { id: "lecture-16", title: "Lecture 16: The Nature of Human Values", level: 0 },
     
-    // Essay 3
-    { id: "essay-3", title: "Essay 3: Argument and Counterargument", level: 0 },
-    { id: "clarity-complexity-dilemma", title: "Clarity-Complexity Dilemma", level: 1 },
-    { id: "resolving-dilemma", title: "Resolving the Dilemma", level: 1 },
+    // Mental Health and Freedom
+    { id: "lecture-17", title: "Lecture 17: Ego-dystonic vs Ego-syntonic Mental Illness", level: 0 },
+    { id: "lecture-18", title: "Lecture 18: Rationalization and Freedom", level: 0 },
     
-    // Theory and Evidence
-    { id: "discussion-4", title: "Discussion 4: Theory and Evidence", level: 0 },
+    // Philosophical Movements
+    { id: "lecture-19", title: "Lecture 19: Existentialism - Strengths and Weaknesses", level: 0 },
+    { id: "lecture-20", title: "Lecture 20: From Freedom to Agency", level: 0 },
     
-    // Final Research Paper
-    { id: "final-paper", title: "Final Research Paper", level: 0 },
-    { id: "paper-requirements", title: "Paper Requirements", level: 1 },
-    { id: "works-cited", title: "Works Cited", level: 1 }
+    // Reference Materials
+    { id: "glossary", title: "Comprehensive Glossary", level: 0 }
   ];
   
   return tableOfContents;
@@ -68,33 +62,27 @@ export default function NavigationSidebar() {
     // If not found, try to find the content by searching text
     if (!element) {
       const titleMap: { [key: string]: string } = {
-        "academic-writing-principles": "Academic writing is the practice",
-        "clarity": "Clarity - The foundation",
-        "evidence": "Evidence - Academic writing builds",
-        "analysis": "Analysis - Academic writing requires",
-        "discussion-1": "Discussion Assignment 1",
-        "essay-1": "Essay 1 -- Analyzing Academic vs. Popular Writing",
-        "essay-1-section-1": "Section 1 (30 points) Academic vs. Popular Writing",
-        "essay-1-section-2": "Section 2 (20 points) Translation Exercise",
-        "discussion-2": "Discussion 2: Types of Academic Evidence",
-        "primary-sources": "Primary Sources involve:",
-        "secondary-sources": "Secondary Sources involve:",
-        "tertiary-sources": "Tertiary Sources involve:",
-        "essay-2": "Essay 2 -- Source Evaluation and Analysis",
-        "essay-2-introduction": "Section 1 (10 points) Introduction",
-        "essay-2-analysis": "Section 2 (20 points) Source Analysis",
-        "essay-2-comparison": "Section 3 (20 points) Comparative Analysis",
-        "discussion-3": "Discussion 3: Analyzing Academic Arguments",
-        "premises": "Premises (claims supported by evidence)",
-        "logical-reasoning": "Logical reasoning connecting the premises",
-        "conclusions": "A supported conclusion",
-        "essay-3": "Essay 3 -- Argument and Counterargument",
-        "clarity-complexity-dilemma": "Section 1 (30 points) The Argumentative Dilemma",
-        "resolving-dilemma": "Section 2 (20 points) Resolving the Dilemma",
-        "discussion-4": "Discussion 4: Theory and Evidence Integration",
-        "final-paper": "Final Research Paper",
-        "paper-requirements": "Minimum 5 scholarly sources",
-        "works-cited": "Works Cited:"
+        "lecture-1": "Lecture1: Determinism",
+        "lecture-2": "Lecture 2: Predictability",
+        "lecture-3": "Lecture 3: Compatibilism",
+        "lecture-4": "Lecture 4: Incompatibilism",
+        "lecture-5": "Lecture 5: Determinism and Moral Responsibility",
+        "lecture-6": "Lecture 6: Predictability and Moral Responsibility",
+        "lecture-7": "Lecture 7: Free Will and Causal Necessity",
+        "lecture-8": "Lecture 8: The Coherence of Free Will",
+        "lecture-9": "Lecture 9: Alternative Conceptions of Free Will",
+        "lecture-10": "Lecture 10: The Libet Experiment: Description and Data",
+        "lecture-11": "Lecture 11: The Libet Experiment - Why It Does Not Validate Compatibilism",
+        "lecture-12": "Lecture 12: Neuroscience and Free Will",
+        "lecture-13": "Lecture 13: Frankfurt's Analysis of Freedom",
+        "lecture-14": "Lecture 14: Problems with Frankfurt's Analysis of Freedom",
+        "lecture-15": "Lecture 15: The Actual Nature of Human Freedom",
+        "lecture-16": "Lecture 16: The Nature of Human Values",
+        "lecture-17": "Lecture 17: Ego-dystonic vs Ego-syntonic Mental Illness and Freedom",
+        "lecture-18": "Lecture 18: Rationalization and How It Undermines Freedom",
+        "lecture-19": "Lecture 19: Existentialism - Its Strengths and Weaknesses",
+        "lecture-20": "Lecture 20: From Freedom to Agency - A New Framework",
+        "glossary": "COMPREHENSIVE GLOSSARY"
       };
       
       const searchText = titleMap[id];
