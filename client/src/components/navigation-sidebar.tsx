@@ -62,27 +62,27 @@ export default function NavigationSidebar() {
     // If not found, try to find the content by searching text
     if (!element) {
       const titleMap: { [key: string]: string } = {
-        "lecture-1": "Lecture1: Determinism",
-        "lecture-2": "Lecture 2: Predictability",
-        "lecture-3": "Lecture 3: Compatibilism",
-        "lecture-4": "Lecture 4: Incompatibilism",
-        "lecture-5": "Lecture 5: Determinism and Moral Responsibility",
-        "lecture-6": "Lecture 6: Predictability and Moral Responsibility",
-        "lecture-7": "Lecture 7: Free Will and Causal Necessity",
-        "lecture-8": "Lecture 8: The Coherence of Free Will",
-        "lecture-9": "Lecture 9: Alternative Conceptions of Free Will",
-        "lecture-10": "Lecture 10: The Libet Experiment: Description and Data",
-        "lecture-11": "Lecture 11: The Libet Experiment - Why It Does Not Validate Compatibilism",
-        "lecture-12": "Lecture 12: Neuroscience and Free Will",
-        "lecture-13": "Lecture 13: Frankfurt's Analysis of Freedom",
-        "lecture-14": "Lecture 14: Problems with Frankfurt's Analysis of Freedom",
-        "lecture-15": "Lecture 15: The Actual Nature of Human Freedom",
-        "lecture-16": "Lecture 16: The Nature of Human Values",
-        "lecture-17": "Lecture 17: Ego-dystonic vs Ego-syntonic Mental Illness and Freedom",
-        "lecture-18": "Lecture 18: Rationalization and How It Undermines Freedom",
-        "lecture-19": "Lecture 19: Existentialism - Its Strengths and Weaknesses",
-        "lecture-20": "Lecture 20: From Freedom to Agency - A New Framework",
-        "glossary": "COMPREHENSIVE GLOSSARY"
+        "lecture-1": "Determinism is the doctrine that nothing is uncaused - that all events follow necessarily",
+        "lecture-2": "Predictability is closely related to, but distinct from, determinism. A system can be deterministic",
+        "lecture-3": "Compatibilism holds that free will and determinism can coexist - that our actions can be both determined and free",
+        "lecture-4": "Incompatibilism holds that free will and determinism cannot coexist",
+        "lecture-5": "The relationship between determinism and moral responsibility is one of the most contested issues",
+        "lecture-6": "The relationship between predictability and moral responsibility raises additional complexities",
+        "lecture-7": "God's Foreknowledge and Moral Responsibility",
+        "lecture-8": "The coherence of free will has been challenged from multiple directions",
+        "lecture-9": "The Structure of the Self",
+        "lecture-10": "The Libet Experiment: Description and Data",
+        "lecture-11": "The Libet Experiment - Why It Does Not Validate Compatibilism",
+        "lecture-12": "Frankfurt's Refutation of the \"Could Have Done Otherwise\" Analysis",
+        "lecture-13": "Frankfurt's Analysis of Freedom",
+        "lecture-14": "Problems with Frankfurt's Analysis of Freedom",
+        "lecture-15": "The Actual Nature of Human Freedom",
+        "lecture-16": "The Nature of Human Values",
+        "lecture-17": "Ego-dystonic vs Ego-syntonic Mental Illness and Freedom",
+        "lecture-18": "Rationalization and How It Undermines Freedom",
+        "lecture-19": "Existentialism - Its Strengths and Weaknesses",
+        "lecture-20": "From Freedom to Agency - A New Framework",
+        "glossary": "KEY TERMS DICTIONARY"
       };
       
       const searchText = titleMap[id];
@@ -97,10 +97,13 @@ export default function NavigationSidebar() {
             const el = allElements[i];
             const textContent = el.textContent || '';
             
-            // Skip table of contents sections - look for actual theorem statements
+            // Skip table of contents sections - look for actual lecture content
+            // We want to skip the TOC entries and find the actual lecture headings/content
             if (textContent.includes(searchText) && 
                 !textContent.includes('Table of Contents') && 
-                !el.closest('.table-of-contents')) {
+                !el.closest('.table-of-contents') &&
+                // Skip short entries that are likely table of contents
+                textContent.length > 100) {
               element = el as HTMLElement;
               console.log(`Found element by text search: ${el.tagName} - ${textContent.substring(0, 50)}...`);
               break;
