@@ -290,6 +290,30 @@ export default function ChatInterface({ selectedModel, mathMode = true, selected
         {/* Chat Messages */}
         <ScrollArea className="flex-1 overflow-y-auto min-h-0">
           <div className="p-4 space-y-4">
+            {/* Welcome Message - shown when no chat history */}
+            {(!chatHistory || !Array.isArray(chatHistory) || chatHistory.length === 0) && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                <div className="flex items-start space-x-3">
+                  <Bot className="text-blue-600 mt-1 w-5 h-5" />
+                  <div className="flex-1">
+                    <p className="text-blue-900 font-medium mb-2">Welcome to the Interactive Philosophy Text!</p>
+                    <p className="text-blue-800 text-sm leading-relaxed">
+                      This is a fully interactive text. You can:
+                    </p>
+                    <ul className="text-blue-800 text-sm mt-2 space-y-1 ml-2">
+                      <li>• <strong>Highlight any text</strong> to discuss, rewrite, or generate tests/study guides</li>
+                      <li>• <strong>Ask questions</strong> about any concept or lecture</li>
+                      <li>• <strong>Request explanations</strong> of complex philosophical arguments</li>
+                      <li>• <strong>Generate practice tests</strong> from any section</li>
+                    </ul>
+                    <p className="text-blue-700 text-sm mt-3 italic">
+                      Start by asking a question or highlighting text from the document!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {(chatHistory as ChatMessage[]).map((chat: ChatMessage) => (
                 <div key={chat.id} className="space-y-2">
                   {/* User Message */}
