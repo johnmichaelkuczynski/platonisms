@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
+import { join } from "path";
 import session from "express-session";
 import { storage } from "./storage";
 import { generateAIResponse, generateRewrite, generatePassageExplanation, generatePassageDiscussionResponse, generateQuiz, generateStudyGuide, generateStudentTest } from "./services/ai-models";
@@ -12,7 +13,7 @@ import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
 import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, podcastRequestSchema, type AIModel } from "@shared/schema";
-import PodcastGenerator from "./services/podcast-generator";
+import { podcastService } from "./services/podcast-service";
 import multer from "multer";
 
 declare module 'express-session' {
@@ -659,8 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { sourceText, model } = podcastRequestSchema.parse(req.body);
       const user = await getCurrentUser(req);
       
-      const podcastGenerator = new PodcastGenerator();
-      const { script, audioPath } = await podcastGenerator.generatePodcast(sourceText, model);
+      const { script, audioPath } = await podcastService.generateCompletePodcast(sourceText, model);
       
       // Check if user has access to full features
       let finalScript = script;
@@ -679,7 +679,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const savedPodcast = await storage.createPodcastSummary({
         sourceText,
         script: finalScript,
-        audioPath,
+        audioPath: audioPath || null,
         model
       });
       
@@ -1247,6 +1247,20 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       feedback
     };
   }
+
+  // Serve audio files
+  app.use('/audio', express.static(join(process.cwd(), 'dist', 'audio')));
+
+  // Get podcast summaries endpoint
+  app.get("/api/podcasts", async (req, res) => {
+    try {
+      const podcasts = await storage.getPodcastSummaries();
+      res.json(podcasts);
+    } catch (error) {
+      console.error("Error fetching podcasts:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

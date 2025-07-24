@@ -251,6 +251,20 @@ export default function LivingBook() {
                 <span className="sm:hidden">Guide</span>
               </Button>
 
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const fullText = getFullDocumentContent();
+                  handleGeneratePodcastFromSelection(fullText);
+                }}
+                className="flex items-center space-x-1 sm:space-x-2 text-orange-600 border-orange-200 hover:bg-orange-50"
+              >
+                <span className="text-sm">🎧</span>
+                <span className="hidden sm:inline">Podcast Summary</span>
+                <span className="sm:hidden">Podcast</span>
+              </Button>
+
               <ModelSelector 
                 selectedModel={selectedModel} 
                 onModelChange={setSelectedModel} 
