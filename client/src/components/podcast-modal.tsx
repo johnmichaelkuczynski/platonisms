@@ -196,6 +196,8 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
           {process.env.NODE_ENV === 'development' && (
             <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">
               Debug: Podcast state = {podcast ? 'Generated' : 'Not generated'}, Loading = {generatePodcastMutation.isPending ? 'Yes' : 'No'}
+              {podcast && <div>Script length: {podcast.script ? podcast.script.length : 'NO SCRIPT'} chars</div>}
+              {podcast && <div>Script preview: {podcast.script ? podcast.script.substring(0, 100) + '...' : 'EMPTY'}</div>}
             </div>
           )}
 
