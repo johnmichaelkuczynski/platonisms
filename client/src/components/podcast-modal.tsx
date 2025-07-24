@@ -46,10 +46,23 @@ export default function PodcastModal({
       generateAudio: boolean;
       voice?: string;
     }) => {
-      return apiRequest("/api/generate-podcast", {
+      const response = await fetch("/api/generate-podcast", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to generate podcast: ${errorText || response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log("Raw response from server:", result);
+      return result;
     },
     onSuccess: (response: any) => {
       console.log("Podcast generation response:", response);
