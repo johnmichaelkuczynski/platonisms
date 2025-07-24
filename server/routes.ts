@@ -1211,7 +1211,15 @@ FEEDBACK: [explanation focusing on content accuracy]`;
   // Podcast generation endpoint
   app.post("/api/generate-podcast", async (req, res) => {
     try {
-      const user = await getUserFromSession(req);
+      // Get user with better error handling
+      let user;
+      try {
+        user = await getUserFromSession(req);
+      } catch (dbError) {
+        console.error("Database error getting user session:", dbError);
+        return res.status(500).json({ error: "Database connection error" });
+      }
+
       if (!user) {
         return res.status(401).json({ error: "Not authenticated" });
       }
@@ -1220,7 +1228,14 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       const { selectedText, instructionType, customInstructions, model } = validatedData;
 
       // Check if user can access this feature (credits or admin)
-      const hasAccess = await canAccessFeature(user.id);
+      let hasAccess;
+      try {
+        hasAccess = await canAccessFeature(user.id);
+      } catch (dbError) {
+        console.error("Database error checking access:", dbError);
+        // For admin users, allow access even if DB fails
+        hasAccess = isAdmin(user);
+      }
       
       if (!hasAccess) {
         // Generate preview for users without credits
@@ -1246,9 +1261,14 @@ FEEDBACK: [explanation focusing on content accuracy]`;
         model
       });
 
-      // Deduct credits for non-admin users
+      // Deduct credits for non-admin users (with error handling)
       if (!isAdmin(user)) {
-        await storage.updateUserCredits(user.id, user.credits - 10);
+        try {
+          await storage.updateUserCredits(user.id, user.credits - 10);
+        } catch (dbError) {
+          console.error("Database error updating credits:", dbError);
+          // Still allow the podcast generation to succeed
+        }
       }
 
       res.json({ script });
