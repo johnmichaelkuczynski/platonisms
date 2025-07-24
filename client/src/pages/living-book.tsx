@@ -12,7 +12,7 @@ import PassageDiscussionModal from "@/components/passage-discussion-modal";
 import QuizModal from "@/components/quiz-modal";
 import StudyGuideModal from "@/components/study-guide-modal";
 import StudentTestModal from "@/components/student-test-modal";
-import PodcastModal from "@/components/podcast-modal";
+
 
 import ChunkingModal from "@/components/chunking-modal";
 import AuthModal from "@/components/auth-modal";
@@ -44,8 +44,7 @@ export default function LivingBook() {
   const [studentTestModalOpen, setStudentTestModalOpen] = useState(false);
   const [selectedTextForStudentTest, setSelectedTextForStudentTest] = useState<string>("");
   const [studentTestChunkIndex, setStudentTestChunkIndex] = useState<number | null>(null);
-  const [podcastModalOpen, setPodcastModalOpen] = useState(false);
-  const [selectedTextForPodcast, setSelectedTextForPodcast] = useState<string>("");
+
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
   const [pendingChunkText, setPendingChunkText] = useState<string>("");
@@ -148,16 +147,7 @@ export default function LivingBook() {
     }
   };
 
-  const handleGeneratePodcastFromSelection = (text: string) => {
-    console.log("Opening podcast modal with text:", text.substring(0, 100) + "...");
-    setSelectedTextForPodcast(text);
-    setPodcastModalOpen(true);
-  };
 
-  const handlePodcastModalClose = () => {
-    setPodcastModalOpen(false);
-    setSelectedTextForPodcast("");
-  };
 
   const handleStudyGuideModalClose = () => {
     setStudyGuideModalOpen(false);
@@ -252,19 +242,7 @@ export default function LivingBook() {
                 <span className="sm:hidden">Guide</span>
               </Button>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const fullText = getFullDocumentContent();
-                  handleGeneratePodcastFromSelection(fullText);
-                }}
-                className="flex items-center space-x-1 sm:space-x-2 text-orange-600 border-orange-200 hover:bg-orange-50"
-              >
-                <span className="text-sm">🎧</span>
-                <span className="hidden sm:inline">Podcast Summary</span>
-                <span className="sm:hidden">Podcast</span>
-              </Button>
+
 
               <ModelSelector 
                 selectedModel={selectedModel} 
@@ -346,7 +324,7 @@ export default function LivingBook() {
             onPassageDiscussion={handlePassageDiscussion}
             onCreateStudyGuide={handleCreateStudyGuideFromSelection}
             onTestMe={handleTestMeFromSelection}
-            onGeneratePodcast={handleGeneratePodcastFromSelection}
+
           />
         </main>
 
@@ -410,13 +388,7 @@ export default function LivingBook() {
         chunkIndex={studentTestChunkIndex ?? undefined}
       />
 
-      {/* Podcast Modal */}
-      <PodcastModal
-        isOpen={podcastModalOpen}
-        onClose={handlePodcastModalClose}
-        selectedText={selectedTextForPodcast}
-        defaultModel={selectedModel}
-      />
+
 
       {/* Chunking Modal */}
       <ChunkingModal

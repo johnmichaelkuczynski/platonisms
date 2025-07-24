@@ -19,45 +19,7 @@ export const bookContent: BookContent = {
     {
       id: "section-1",
       title: "Section 1",
-      content: `Its Scope and Limits
-
-Lecture1: Determinism
-
-Lecture 2: Predictability
-
-Lecture 3: Compatibilism
-
-Lecture 4: Incompatibilism
-
-Lecture 5: Determinism and Moral Responsibility
-
-Lecture 6: Predictability and Moral Responsibility
-
-Lecture 8: The Coherence of Free Will
-
-Lecture 10: The Libet Experiment: Description and Data
-
-Lecture 11: The Libet Experiment - Why It Does Not Validate Compatibilism
-
-Lecture 13: Frankfurt's Analysis of Freedom
-
-Lecture 14: Problems with Frankfurt's Analysis of Freedom
-
-Lecture 15: The Actual Nature of Human Freedom
-
-Lecture 16: The Nature of Human Values
-
-Lecture 17: Ego-dystonic vs Ego-syntonic Mental Illness and Freedom
-
-Lecture 18: Rationalization and How It Undermines Freedom
-
-Lecture 19: Existentialism - Its Strengths and Weaknesses
-
-Lecture 20: From Freedom to Agency - A New Framework
-
-COMPREHENSIVE GLOSSARY
-
-Lecture1: Determinism
+      content: `Lecture 1: Determinism
 
 Determinism is the doctrine that nothing is uncaused - that all events follow necessarily from prior events according to natural laws. In a deterministic universe, the state of the world at any given moment fully determines its state at all future moments.
 
@@ -197,11 +159,11 @@ However, even in a fully deterministic universe, perfect prediction faces severa
 
 1. Complexity: The number of variables involved in most real-world events makes tracking all relevant causes practically impossible.
 
-2. Knowledge Requirements: To predict an event, we must know both the causal laws and the current state of all relevant variables.
+2. Interference Effects: To predict an event, we must know both the causal laws and the current state of all relevant variables. Because of interference effects, our knowledge of current conditions is only approximate, and this necessarily limits the accuracy of our predictions.
 
-3. Intervention Effects: The very act of gathering information to make predictions may alter the system being predicted.
+3. Knowledge-growth inherently unpredictable: We cannot predict what we will know in the future. (If we predict that we will know it, then we already know it, in which case it is not knowledge that we are predicting that we will have.) This by itself makes it impossible to predict all future events. Moreover, because what we know affects what we do and therefore affects the course of events, it means that we cannot know how our future knowledge will affect the course of events.
 
-Interestingly, the same principles apply to knowledge of the past. When we see footprints in sand, we can "retrodict" that someone walked there - working backward from effect to cause. This suggests that prediction and retrodiction rely on the same basic understanding of causal relationships.`
+Interestingly, the same principles used in prediction apply to retrodiction. When we see footprints in sand, we can "retrodict" that someone walked there - working backward from effect to cause. This suggests that prediction and retrodiction rely on the same basic understanding of causal relationships.`
     },
     {
       id: "section-2",

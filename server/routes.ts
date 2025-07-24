@@ -12,7 +12,7 @@ import { generatePDF } from "./services/pdf-generator";
 import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
-import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, podcastRequestSchema, type AIModel } from "@shared/schema";
+import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
 import { podcastService } from "./services/podcast-service";
 import multer from "multer";
 
@@ -654,49 +654,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Podcast generation endpoint with authentication
-  app.post("/api/generate-podcast", async (req, res) => {
-    try {
-      const { sourceText, model } = podcastRequestSchema.parse(req.body);
-      const user = await getCurrentUser(req);
-      
-      const { script, audioPath } = await podcastService.generateCompletePodcast(sourceText, model);
-      
-      // Check if user has access to full features
-      let finalScript = script;
-      let isPreview = false;
-      
-      if (!canAccessFeature(user)) {
-        finalScript = getPreviewResponse(script, !user);
-        isPreview = true;
-      } else {
-        // Deduct 5 credits for podcast generation (skip for admin)
-        if (!isAdmin(user)) {
-          await storage.updateUserCredits(user!.id, user!.credits - 5);
-        }
-      }
-      
-      const savedPodcast = await storage.createPodcastSummary({
-        sourceText,
-        script: finalScript,
-        audioPath: audioPath || null,
-        model
-      });
-      
-      res.json({ 
-        podcast: {
-          id: savedPodcast.id,
-          script: finalScript,
-          audioPath,
-          timestamp: savedPodcast.timestamp
-        },
-        isPreview 
-      });
-    } catch (error) {
-      console.error("Podcast generation error:", error);
-      res.status(500).json({ error: error.message || "Failed to generate podcast" });
-    }
-  });
+
 
   // Student test generation endpoint with authentication
   app.post("/api/generate-student-test", async (req, res) => {
@@ -1251,16 +1209,7 @@ FEEDBACK: [explanation focusing on content accuracy]`;
   // Serve audio files
   app.use('/audio', express.static(join(process.cwd(), 'dist', 'audio')));
 
-  // Get podcast summaries endpoint
-  app.get("/api/podcasts", async (req, res) => {
-    try {
-      const podcasts = await storage.getPodcastSummaries();
-      res.json(podcasts);
-    } catch (error) {
-      console.error("Error fetching podcasts:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
+
 
   const httpServer = createServer(app);
   return httpServer;
