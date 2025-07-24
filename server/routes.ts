@@ -660,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await getCurrentUser(req);
       
       const podcastGenerator = new PodcastGenerator();
-      const { script, audioPath } = await podcastGenerator.generatePodcast(sourceText, model);
+      const { script, audioPath } = await podcastGenerator.generatePodcastSummary(sourceText, model);
       
       // Check if user has access to full features
       let finalScript = script;

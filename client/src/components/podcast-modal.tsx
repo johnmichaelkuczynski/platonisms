@@ -28,9 +28,20 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [showCustomization, setShowCustomization] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen && selectedText) {
+      setModel(defaultModel || "openai");
+      setPodcast(null);
+      setIsPreview(false);
+      setShowCustomization(false);
+    }
+  }, [isOpen, selectedText, defaultModel]);
 
   const generatePodcastMutation = useMutation({
     mutationFn: async () => {
@@ -192,41 +203,80 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
           {/* Generation Controls */}
           {!podcast && (
             <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-1">
-                  <label className="text-sm font-medium mb-2 block">AI Model:</label>
-                  <Select value={model} onValueChange={(value: AIModel) => setModel(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select AI model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="openai">OpenAI GPT-4</SelectItem>
-                      <SelectItem value="anthropic">Anthropic Claude</SelectItem>
-                      <SelectItem value="deepseek">DeepSeek</SelectItem>
-                      <SelectItem value="perplexity">Perplexity</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="pt-6">
+              {/* Default vs Customize Options */}
+              <div className="flex gap-4">
+                <Button 
+                  onClick={() => {
+                    setShowCustomization(false);
+                    handleGenerate();
+                  }}
+                  disabled={generatePodcastMutation.isPending || !selectedText}
+                  className="flex-1"
+                  size="lg"
+                >
+                  {generatePodcastMutation.isPending && !showCustomization ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating Default...
+                    </>
+                  ) : (
+                    <>
+                      <Headphones className="mr-2 h-4 w-4" />
+                      Generate Default Podcast
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowCustomization(!showCustomization)}
+                  disabled={generatePodcastMutation.isPending}
+                  size="lg"
+                >
+                  Customize
+                </Button>
+              </div>
+
+              {/* Customization Panel */}
+              {showCustomization && (
+                <div className="space-y-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      AI Model (Default: {defaultModel || 'OpenAI'}):
+                    </label>
+                    <Select value={model} onValueChange={(value: AIModel) => setModel(value)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="openai">OpenAI GPT-4</SelectItem>
+                        <SelectItem value="anthropic">Anthropic Claude</SelectItem>
+                        <SelectItem value="deepseek">DeepSeek</SelectItem>
+                        <SelectItem value="perplexity">Perplexity</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <Button 
-                    onClick={handleGenerate} 
+                    onClick={() => handleGenerate()}
                     disabled={generatePodcastMutation.isPending || !selectedText}
-                    className="min-w-32"
+                    className="w-full"
+                    size="lg"
                   >
-                    {generatePodcastMutation.isPending ? (
+                    {generatePodcastMutation.isPending && showCustomization ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating Custom...
                       </>
                     ) : (
                       <>
-                        <Headphones className="w-4 h-4 mr-2" />
-                        Generate Podcast
+                        <Headphones className="mr-2 h-4 w-4" />
+                        Generate Custom Podcast
                       </>
                     )}
                   </Button>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
