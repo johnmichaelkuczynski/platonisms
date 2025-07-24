@@ -20,9 +20,7 @@ export interface IStorage {
   createStudentTest(studentTest: InsertStudentTest): Promise<StudentTest>;
   getStudentTests(): Promise<StudentTest[]>;
   getStudentTestById(id: number): Promise<StudentTest | null>;
-  createPodcastSummary(podcastSummary: InsertPodcastSummary): Promise<PodcastSummary>;
-  getPodcastSummaries(): Promise<PodcastSummary[]>;
-  getPodcastSummaryById(id: number): Promise<PodcastSummary | null>;
+
   
   // User management
   createUser(user: InsertUser): Promise<User>;
@@ -57,7 +55,7 @@ export class MemStorage implements IStorage {
   private quizzes: Map<number, Quiz>;
   private studyGuides: Map<number, StudyGuide>;
   private studentTests: Map<number, StudentTest>;
-  private podcastSummaries: Map<number, PodcastSummary>;
+
   private testResults: Map<number, TestResult>;
   private users: Map<number, User>;
   private usersByUsername: Map<string, User>;
@@ -69,7 +67,7 @@ export class MemStorage implements IStorage {
   private currentQuizId: number;
   private currentStudyGuideId: number;
   private currentStudentTestId: number;
-  private currentPodcastId: number;
+
   private currentTestResultId: number;
   private currentUserId: number;
   private currentPurchaseId: number;
@@ -81,7 +79,7 @@ export class MemStorage implements IStorage {
     this.quizzes = new Map();
     this.studyGuides = new Map();
     this.studentTests = new Map();
-    this.podcastSummaries = new Map();
+
     this.testResults = new Map();
     this.users = new Map();
     this.usersByUsername = new Map();
@@ -93,7 +91,7 @@ export class MemStorage implements IStorage {
     this.currentQuizId = 1;
     this.currentStudyGuideId = 1;
     this.currentStudentTestId = 1;
-    this.currentPodcastId = 1;
+
     this.currentTestResultId = 1;
     this.currentUserId = 1;
     this.currentPurchaseId = 1;
@@ -330,26 +328,7 @@ export class MemStorage implements IStorage {
     }
   }
 
-  // Podcast methods
-  async createPodcastSummary(insertPodcastSummary: InsertPodcastSummary): Promise<PodcastSummary> {
-    const id = this.currentPodcastId++;
-    const podcastSummary: PodcastSummary = {
-      ...insertPodcastSummary,
-      id,
-      timestamp: new Date(),
-    };
-    this.podcastSummaries.set(id, podcastSummary);
-    return podcastSummary;
-  }
 
-  async getPodcastSummaries(): Promise<PodcastSummary[]> {
-    return Array.from(this.podcastSummaries.values())
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  }
-
-  async getPodcastSummaryById(id: number): Promise<PodcastSummary | null> {
-    return this.podcastSummaries.get(id) || null;
-  }
 
   // Test result methods
   async createTestResult(insertTestResult: InsertTestResult): Promise<TestResult> {
