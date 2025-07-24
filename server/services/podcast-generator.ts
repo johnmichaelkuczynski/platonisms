@@ -1,4 +1,5 @@
 import { generateAIResponse } from "./ai-models";
+import { generateTTS } from "./tts-service";
 import type { AIModel } from "@shared/schema";
 
 export interface PodcastGenerationOptions {
@@ -6,10 +7,12 @@ export interface PodcastGenerationOptions {
   instructionType: "default" | "custom";
   customInstructions?: string;
   model: AIModel;
+  generateAudio?: boolean;
+  voice?: string;
 }
 
-export async function generatePodcastScript(options: PodcastGenerationOptions): Promise<string> {
-  const { selectedText, instructionType, customInstructions, model } = options;
+export async function generatePodcastScript(options: PodcastGenerationOptions): Promise<{ script: string; audioUrl?: string }> {
+  const { selectedText, instructionType, customInstructions, model, generateAudio, voice } = options;
 
   let systemPrompt = "";
   let userPrompt = "";
@@ -55,9 +58,25 @@ User instructions: ${customInstructions}`;
 
   try {
     const script = await generateAIResponse(userPrompt, model as AIModel, [], systemPrompt);
-    return script;
+    
+    // If audio generation is requested, create TTS
+    let audioUrl: string | undefined;
+    if (generateAudio) {
+      try {
+        audioUrl = await generateTTS({
+          text: script,
+          voice: voice || "alloy"
+        });
+      } catch (ttsError) {
+        console.error("TTS generation failed:", ttsError);
+        // Don't fail the entire request if TTS fails
+        throw new Error(`Audio generation failed: ${ttsError instanceof Error ? ttsError.message : "Unknown TTS error"}`);
+      }
+    }
+    
+    return { script, audioUrl };
   } catch (error) {
     console.error("Error generating podcast script:", error);
-    throw new Error("Failed to generate podcast script");
+    throw new Error(`Failed to generate podcast script: ${error instanceof Error ? error.message : "Unknown error"}`);
   }
 }

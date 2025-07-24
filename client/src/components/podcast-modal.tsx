@@ -5,10 +5,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { X, Volume2, Download } from "lucide-react";
+import { X, Volume2, Download, Play, Pause } from "lucide-react";
 import type { AIModel } from "@shared/schema";
 
 interface PodcastModalProps {
@@ -29,6 +31,10 @@ export default function PodcastModal({
   const [podcastScript, setPodcastScript] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generateAudio, setGenerateAudio] = useState<boolean>(true);
+  const [selectedVoice, setSelectedVoice] = useState<string>("alloy");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
   const generatePodcastMutation = useMutation({
@@ -37,6 +43,8 @@ export default function PodcastModal({
       instructionType: "default" | "custom";
       customInstructions?: string;
       model: AIModel;
+      generateAudio: boolean;
+      voice?: string;
     }) => {
       return apiRequest("/api/generate-podcast", {
         method: "POST",
@@ -44,15 +52,28 @@ export default function PodcastModal({
       });
     },
     onSuccess: (response: any) => {
-      setPodcastScript(response.script);
+      if (response.script) {
+        setPodcastScript(response.script);
+      }
       if (response.audioUrl) {
         setAudioUrl(response.audioUrl);
+        toast({
+          title: "Podcast Generated",
+          description: "Your audio podcast has been created successfully!",
+        });
+      } else if (!generateAudio) {
+        toast({
+          title: "Text Script Generated",
+          description: "Your podcast script has been created successfully.",
+        });
+      } else {
+        toast({
+          title: "Script Generated",
+          description: "Audio generation failed, but text script is available.",
+          variant: "destructive",
+        });
       }
       setIsGenerating(false);
-      toast({
-        title: "Podcast Generated",
-        description: "Your podcast summary has been created successfully.",
-      });
     },
     onError: (error: any) => {
       console.error("Podcast generation failed:", error);
@@ -93,7 +114,29 @@ export default function PodcastModal({
       instructionType,
       customInstructions: instructionType === "custom" ? customInstructions : undefined,
       model: defaultModel,
+      generateAudio,
+      voice: generateAudio ? selectedVoice : undefined,
     });
+  };
+
+  const handlePlayPause = () => {
+    if (!audioUrl) return;
+
+    if (!audio) {
+      const newAudio = new Audio(audioUrl);
+      newAudio.onended = () => setIsPlaying(false);
+      setAudio(newAudio);
+      newAudio.play();
+      setIsPlaying(true);
+    } else {
+      if (isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+      } else {
+        audio.play();
+        setIsPlaying(true);
+      }
+    }
   };
 
   const handleDownload = () => {
@@ -111,6 +154,12 @@ export default function PodcastModal({
   };
 
   const handleClose = () => {
+    // Stop and cleanup audio if playing
+    if (audio) {
+      audio.pause();
+      setAudio(null);
+    }
+    setIsPlaying(false);
     setPodcastScript("");
     setAudioUrl("");
     setCustomInstructions("");
@@ -183,6 +232,41 @@ export default function PodcastModal({
             </div>
           )}
 
+          {/* Audio Generation Options */}
+          <div className="space-y-3 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="generate-audio" 
+                checked={generateAudio}
+                onCheckedChange={(checked) => setGenerateAudio(checked === true)}
+              />
+              <Label htmlFor="generate-audio" className="text-sm font-medium">
+                Generate Audio Narration (+4 credits)
+              </Label>
+            </div>
+            
+            {generateAudio && (
+              <div>
+                <Label htmlFor="voice-select" className="text-sm font-medium">
+                  Voice Selection
+                </Label>
+                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                  <SelectTrigger className="w-full mt-1">
+                    <SelectValue placeholder="Select a voice" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
+                    <SelectItem value="echo">Echo (Male)</SelectItem>
+                    <SelectItem value="fable">Fable (British Male)</SelectItem>
+                    <SelectItem value="onyx">Onyx (Deep Male)</SelectItem>
+                    <SelectItem value="nova">Nova (Female)</SelectItem>
+                    <SelectItem value="shimmer">Shimmer (Female)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
           {/* Generate Button */}
           <Button
             onClick={handleGenerate}
@@ -201,15 +285,27 @@ export default function PodcastModal({
                 {podcastScript && (
                   <div className="flex space-x-2">
                     {audioUrl && (
-                      <Button variant="outline" size="sm">
-                        <Volume2 className="h-4 w-4 mr-1" />
-                        Play
+                      <Button variant="outline" size="sm" onClick={handlePlayPause}>
+                        {isPlaying ? (
+                          <Pause className="h-4 w-4 mr-1" />
+                        ) : (
+                          <Play className="h-4 w-4 mr-1" />
+                        )}
+                        {isPlaying ? "Pause" : "Play"}
                       </Button>
                     )}
                     <Button variant="outline" size="sm" onClick={handleDownload}>
                       <Download className="h-4 w-4 mr-1" />
-                      Download
+                      Download Script
                     </Button>
+                    {audioUrl && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={audioUrl} download={`podcast-${new Date().toISOString().split('T')[0]}.mp3`}>
+                          <Download className="h-4 w-4 mr-1" />
+                          Download Audio
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
@@ -217,14 +313,28 @@ export default function PodcastModal({
               {isGenerating ? (
                 <div className="flex items-center justify-center p-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="ml-3 text-sm text-gray-600">Generating podcast...</span>
+                  <span className="ml-3 text-sm text-gray-600">
+                    {generateAudio ? "Generating podcast script and audio..." : "Generating podcast script..."}
+                  </span>
                 </div>
               ) : (
-                <ScrollArea className="h-64 w-full rounded border bg-gray-50 dark:bg-gray-900 p-4">
-                  <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                    {podcastScript}
-                  </div>
-                </ScrollArea>
+                <>
+                  {audioUrl && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium mb-2">🎧 Audio Podcast</h4>
+                      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-3">
+                        <p className="text-sm text-green-700 dark:text-green-300">
+                          ✅ Your audio podcast has been generated successfully! Use the Play button above to listen.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <ScrollArea className="h-64 w-full rounded border bg-gray-50 dark:bg-gray-900 p-4">
+                    <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                      {podcastScript}
+                    </div>
+                  </ScrollArea>
+                </>
               )}
 
               {audioUrl && (

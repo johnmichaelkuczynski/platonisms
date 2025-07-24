@@ -1221,17 +1221,19 @@ FEEDBACK: [explanation focusing on content accuracy]`;
 
       console.log("Request body:", req.body); // Debug log
       const validatedData = podcastRequestSchema.parse(req.body);
-      const { selectedText, instructionType, customInstructions, model } = validatedData;
+      const { selectedText, instructionType, customInstructions, model, generateAudio, voice } = validatedData;
 
       // Generate full podcast script for admin user
-      const script = await generatePodcastScript({
+      const result = await generatePodcastScript({
         selectedText,
         instructionType,
         customInstructions,
-        model
+        model,
+        generateAudio,
+        voice
       });
 
-      res.json({ script });
+      res.json(result);
     } catch (error) {
       console.error("Podcast generation error:", error);
       res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate podcast" });

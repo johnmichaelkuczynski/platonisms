@@ -5,6 +5,8 @@ export const podcastRequestSchema = z.object({
   instructionType: z.enum(["default", "custom"]),
   customInstructions: z.string().optional(),
   model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
+  generateAudio: z.boolean(),
+  voice: z.string().optional(),
 });
 
 export type PodcastRequest = z.infer<typeof podcastRequestSchema>;
