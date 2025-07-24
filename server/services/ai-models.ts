@@ -297,7 +297,7 @@ export async function generateAIResponse(model: AIModel, prompt: string, isInstr
   }
   
   const systemPrompt = isInstruction 
-    ? `${paperContext}\n\nYou are helping analyze, modify, or explain the Dictionary of Analytic Philosophy content. Follow the user's instructions precisely while staying true to the philosophical concepts and definitions presented. Keep responses concise unless the user specifically asks for elaboration.
+    ? `${paperContext}\n\nYou are helping analyze, modify, or explain the Human Freedom content by J.-M. Kuczynski. Follow the user's instructions precisely while staying true to the philosophical concepts about determinism, free will, moral responsibility, and human agency presented in the document. Keep responses concise unless the user specifically asks for elaboration.
 
 CRITICAL FORMATTING RULES:
 - Write in plain text format ONLY
@@ -414,10 +414,10 @@ export async function generateQuiz(model: AIModel, sourceText: string, instructi
   
   const systemPrompt = `${paperContext}
 
-You are helping create a comprehensive quiz/test/exam based on the Dictionary of Analytic Philosophy content. Follow the user's specific instructions for test format, question types, and requirements.
+You are helping create a comprehensive quiz/test/exam based on the "Human Freedom" content by J.-M. Kuczynski. Follow the user's specific instructions for test format, question types, and requirements.
 
 QUIZ GENERATION INSTRUCTIONS:
-- Create questions that test understanding of the philosophical concepts and definitions
+- Create questions that test understanding of philosophical concepts about determinism, free will, moral responsibility, and human agency
 - Follow the user's specific format requirements (multiple choice, essay, short answer, etc.)
 - Ensure questions are academically rigorous and test genuine comprehension
 - Make questions clear, specific, and well-structured
@@ -509,10 +509,10 @@ export async function generateStudyGuide(model: AIModel, sourceText: string, ins
   
   const systemPrompt = `${paperContext}
 
-You are helping create a comprehensive study guide based on the Dictionary of Analytic Philosophy content. Follow the user's specific instructions for study guide format, structure, and requirements.
+You are helping create a comprehensive study guide based on the "Human Freedom" content by J.-M. Kuczynski. Follow the user's specific instructions for study guide format, structure, and requirements.
 
 STUDY GUIDE GENERATION INSTRUCTIONS:
-- Create study materials that help understand the philosophical concepts and definitions
+- Create study materials that help understand philosophical concepts about determinism, free will, moral responsibility, and human agency
 - Follow the user's specific format requirements (outlines, summaries, key points, etc.)
 - Ensure content is academically rigorous and promotes genuine comprehension
 - Make information clear, well-organized, and study-friendly
