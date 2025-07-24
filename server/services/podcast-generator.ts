@@ -57,7 +57,17 @@ User instructions: ${customInstructions}`;
   }
 
   try {
-    const script = await generateAIResponse(userPrompt, model as AIModel, [], systemPrompt);
+    // Create podcast-specific prompt that includes system instructions
+    const podcastPrompt = `PODCAST CREATION TASK:
+
+${systemPrompt}
+
+USER REQUEST:
+${userPrompt}
+
+Generate a podcast script following the formatting rules above.`;
+
+    const script = await generateAIResponse(model, podcastPrompt, true, []);
     
     // If audio generation is requested, create TTS
     let audioUrl: string | undefined;
