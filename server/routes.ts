@@ -13,6 +13,8 @@ import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
 import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
+import { podcastRequestSchema } from "../shared/podcast-schema";
+import { generatePodcastScript } from "./services/podcast-generator";
 
 import multer from "multer";
 
@@ -1205,6 +1207,56 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       feedback
     };
   }
+
+  // Podcast generation endpoint
+  app.post("/api/generate-podcast", async (req, res) => {
+    try {
+      const user = await getUserFromSession(req);
+      if (!user) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const validatedData = podcastRequestSchema.parse(req.body);
+      const { selectedText, instructionType, customInstructions, model } = validatedData;
+
+      // Check if user can access this feature (credits or admin)
+      const hasAccess = await canAccessFeature(user.id);
+      
+      if (!hasAccess) {
+        // Generate preview for users without credits
+        const previewScript = await generatePodcastScript({
+          selectedText: selectedText.substring(0, 500), // Limit text for preview
+          instructionType,
+          customInstructions,
+          model
+        });
+        
+        const previewResponse = getPreviewResponse(previewScript, 200);
+        return res.json({ 
+          script: previewResponse,
+          preview: true 
+        });
+      }
+
+      // Generate full podcast for users with access
+      const script = await generatePodcastScript({
+        selectedText,
+        instructionType,
+        customInstructions,
+        model
+      });
+
+      // Deduct credits for non-admin users
+      if (!isAdmin(user)) {
+        await storage.updateUserCredits(user.id, user.credits - 10);
+      }
+
+      res.json({ script });
+    } catch (error) {
+      console.error("Podcast generation error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate podcast" });
+    }
+  });
 
   // Serve audio files
   app.use('/audio', express.static(join(process.cwd(), 'dist', 'audio')));

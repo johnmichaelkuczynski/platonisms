@@ -12,6 +12,7 @@ import PassageDiscussionModal from "@/components/passage-discussion-modal";
 import QuizModal from "@/components/quiz-modal";
 import StudyGuideModal from "@/components/study-guide-modal";
 import StudentTestModal from "@/components/student-test-modal";
+import PodcastModal from "@/components/podcast-modal";
 
 
 import ChunkingModal from "@/components/chunking-modal";
@@ -44,6 +45,8 @@ export default function LivingBook() {
   const [studentTestModalOpen, setStudentTestModalOpen] = useState(false);
   const [selectedTextForStudentTest, setSelectedTextForStudentTest] = useState<string>("");
   const [studentTestChunkIndex, setStudentTestChunkIndex] = useState<number | null>(null);
+  const [podcastModalOpen, setPodcastModalOpen] = useState(false);
+  const [selectedTextForPodcast, setSelectedTextForPodcast] = useState<string>("");
 
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
@@ -159,6 +162,16 @@ export default function LivingBook() {
     setStudentTestModalOpen(false);
     setSelectedTextForStudentTest("");
     setStudentTestChunkIndex(null);
+  };
+
+  const handleGeneratePodcastFromSelection = (text: string) => {
+    setSelectedTextForPodcast(text);
+    setPodcastModalOpen(true);
+  };
+
+  const handlePodcastModalClose = () => {
+    setPodcastModalOpen(false);
+    setSelectedTextForPodcast("");
   };
 
 
@@ -324,6 +337,7 @@ export default function LivingBook() {
             onPassageDiscussion={handlePassageDiscussion}
             onCreateStudyGuide={handleCreateStudyGuideFromSelection}
             onTestMe={handleTestMeFromSelection}
+            onGeneratePodcast={handleGeneratePodcastFromSelection}
 
           />
         </main>
@@ -386,6 +400,14 @@ export default function LivingBook() {
         selectedModel={selectedModel}
         mathMode={mathMode}
         chunkIndex={studentTestChunkIndex ?? undefined}
+      />
+
+      {/* Podcast Modal */}
+      <PodcastModal
+        isOpen={podcastModalOpen}
+        onClose={handlePodcastModalClose}
+        selectedText={selectedTextForPodcast}
+        model={selectedModel}
       />
 
 
