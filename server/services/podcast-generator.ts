@@ -54,7 +54,7 @@ User instructions: ${customInstructions}`;
   }
 
   try {
-    const script = await generateAIResponse(userPrompt, model, [], systemPrompt);
+    const script = await generateAIResponse(userPrompt, model as AIModel, [], systemPrompt);
     return script;
   } catch (error) {
     console.error("Error generating podcast script:", error);
