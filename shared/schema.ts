@@ -300,6 +300,7 @@ export const purchaseRequestSchema = z.object({
 export const podcastRequestSchema = z.object({
   sourceText: z.string(),
   model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
+  instructions: z.string().optional(),
 });
 
 

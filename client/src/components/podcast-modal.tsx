@@ -29,6 +29,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showCustomization, setShowCustomization] = useState(false);
+  const [customInstructions, setCustomInstructions] = useState("");
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
@@ -44,14 +45,15 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
   }, [isOpen, selectedText, defaultModel]);
 
   const generatePodcastMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ instructions }: { instructions?: string }) => {
       if (!selectedText) throw new Error("No text selected");
       
       const response = await apiRequest("/api/generate-podcast", {
         method: "POST",
         body: JSON.stringify({
           sourceText: selectedText,
-          model
+          model,
+          instructions
         }),
         headers: {
           'Content-Type': 'application/json'
@@ -87,8 +89,12 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
     }
   });
 
-  const handleGenerate = () => {
-    generatePodcastMutation.mutate();
+  const generateDefaultPodcast = () => {
+    generatePodcastMutation.mutate({ instructions: undefined });
+  };
+
+  const generateCustomPodcast = () => {
+    generatePodcastMutation.mutate({ instructions: customInstructions });
   };
 
   const togglePlayback = () => {
@@ -208,7 +214,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
                 <Button 
                   onClick={() => {
                     setShowCustomization(false);
-                    handleGenerate();
+                    generateDefaultPodcast();
                   }}
                   disabled={generatePodcastMutation.isPending || !selectedText}
                   className="flex-1"
@@ -217,7 +223,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
                   {generatePodcastMutation.isPending && !showCustomization ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating Default...
+                      Generating Default Podcast...
                     </>
                   ) : (
                     <>
@@ -233,7 +239,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
                   disabled={generatePodcastMutation.isPending}
                   size="lg"
                 >
-                  Customize
+                  Customize Instructions
                 </Button>
               </div>
 
@@ -242,23 +248,18 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
                 <div className="space-y-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      AI Model (Default: {defaultModel || 'OpenAI'}):
+                      Custom Instructions:
                     </label>
-                    <Select value={model} onValueChange={(value: AIModel) => setModel(value)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="openai">OpenAI GPT-4</SelectItem>
-                        <SelectItem value="anthropic">Anthropic Claude</SelectItem>
-                        <SelectItem value="deepseek">DeepSeek</SelectItem>
-                        <SelectItem value="perplexity">Perplexity</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <textarea
+                      className="w-full h-24 px-3 py-2 border rounded-md resize-none text-sm"
+                      placeholder="Enter custom instructions (e.g., 'Create a festive dialogue between professor and student discussing the main concepts')"
+                      value={customInstructions}
+                      onChange={(e) => setCustomInstructions(e.target.value)}
+                    />
                   </div>
 
                   <Button 
-                    onClick={() => handleGenerate()}
+                    onClick={() => generateCustomPodcast()}
                     disabled={generatePodcastMutation.isPending || !selectedText}
                     className="w-full"
                     size="lg"
@@ -266,7 +267,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
                     {generatePodcastMutation.isPending && showCustomization ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating Custom...
+                        Generating Custom Podcast...
                       </>
                     ) : (
                       <>

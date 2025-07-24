@@ -19,9 +19,9 @@ class PodcastGenerator {
     }
   }
 
-  async generatePodcastSummary(sourceText: string, model: AIModel): Promise<PodcastGenerationResult> {
+  async generatePodcastSummary(sourceText: string, model: AIModel, customInstructions?: string): Promise<PodcastGenerationResult> {
     // Generate the podcast script using AI
-    const script = await this.generatePodcastScript(sourceText, model);
+    const script = await this.generatePodcastScript(sourceText, model, customInstructions);
     
     let audioPath: string | undefined;
     
@@ -29,17 +29,32 @@ class PodcastGenerator {
     if (this.azureSpeech) {
       try {
         audioPath = await this.azureSpeech.generatePodcastAudio(script);
+        console.log("Audio generated successfully:", audioPath);
       } catch (error) {
         console.error("Failed to generate audio:", error);
         // Continue without audio - script will still be available
       }
+    } else {
+      console.log("Azure Speech service not available - script only");
     }
     
     return { script, audioPath };
   }
 
-  private async generatePodcastScript(sourceText: string, model: AIModel): Promise<string> {
-    const prompt = `Create a comprehensive podcast-style summary of the following passage. Format your response as a natural, engaging narration suitable for audio playback.
+  private async generatePodcastScript(sourceText: string, model: AIModel, customInstructions?: string): Promise<string> {
+    let prompt: string;
+    
+    if (customInstructions) {
+      // Use custom instructions provided by user
+      prompt = `Create a podcast-style summary of the following passage based on these specific instructions: ${customInstructions}
+
+Text to analyze:
+${sourceText}
+
+Remember: This will be converted to audio, so write in a natural speaking style suitable for audio playback. Use conversational language, clear transitions, and natural pacing.`;
+    } else {
+      // Use default format: Summary, Strengths, Challenges, Five Quotes
+      prompt = `Create a comprehensive podcast-style summary of the following passage. Format your response as a natural, engaging narration suitable for audio playback.
 
 Your podcast summary must include these elements in order:
 
@@ -49,7 +64,7 @@ Your podcast summary must include these elements in order:
 
 3. READER INSIGHTS: Explain what readers can gain from this passage and what subtle or difficult concepts they should watch for
 
-4. KEY QUOTATIONS: Present five representative and high-quality quotations from the text that capture its essence
+4. FIVE REPRESENTATIVE QUOTES: Present five high-quality quotations from the text that capture its essence
 
 Structure this as a flowing narrative suitable for audio listening. Use conversational language, clear transitions, and natural pacing. Avoid bullet points or formal academic formatting.
 
@@ -57,6 +72,7 @@ Text to analyze:
 ${sourceText}
 
 Remember: This will be converted to audio, so write in a natural speaking style with clear organization and smooth transitions between sections.`;
+    }
 
     return await generateAIResponse(model, prompt, true);
   }
