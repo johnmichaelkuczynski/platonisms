@@ -52,11 +52,14 @@ export default function PodcastModal({
       });
     },
     onSuccess: (response: any) => {
+      console.log("Podcast generation response:", response);
       if (response.script) {
         setPodcastScript(response.script);
+        console.log("Script set successfully");
       }
       if (response.audioUrl) {
         setAudioUrl(response.audioUrl);
+        console.log("Audio URL set:", response.audioUrl);
         toast({
           title: "Podcast Generated",
           description: "Your audio podcast has been created successfully!",

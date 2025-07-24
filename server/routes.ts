@@ -1240,6 +1240,7 @@ FEEDBACK: [explanation focusing on content accuracy]`;
         voice
       });
 
+      console.log("Podcast generation result:", result);
       res.json(result);
     } catch (error) {
       console.error("Podcast generation error:", error);
