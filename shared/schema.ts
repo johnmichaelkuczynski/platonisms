@@ -60,6 +60,15 @@ export const studentTests = pgTable("student_tests", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+export const podcastSummaries = pgTable("podcast_summaries", {
+  id: serial("id").primaryKey(),
+  sourceText: text("source_text").notNull(),
+  script: text("script").notNull(),
+  audioPath: text("audio_path"),
+  model: text("model").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -181,6 +190,13 @@ export const insertTestResultSchema = createInsertSchema(testResults).pick({
   correctCount: true,
 });
 
+export const insertPodcastSummarySchema = createInsertSchema(podcastSummaries).pick({
+  sourceText: true,
+  script: true,
+  audioPath: true,
+  model: true,
+});
+
 
 
 
@@ -206,6 +222,8 @@ export type Purchase = typeof purchases.$inferSelect;
 export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
 export type TestResult = typeof testResults.$inferSelect;
 export type InsertTestResult = z.infer<typeof insertTestResultSchema>;
+export type PodcastSummary = typeof podcastSummaries.$inferSelect;
+export type InsertPodcastSummary = z.infer<typeof insertPodcastSummarySchema>;
 
 
 
@@ -279,6 +297,11 @@ export const purchaseRequestSchema = z.object({
   currency: z.string().default("USD"),
 });
 
+export const podcastRequestSchema = z.object({
+  sourceText: z.string(),
+  model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
+});
+
 
 
 // Export request types
@@ -292,3 +315,4 @@ export type StudentTestRequest = z.infer<typeof studentTestRequestSchema>;
 export type RegisterRequest = z.infer<typeof registerRequestSchema>;
 export type LoginRequest = z.infer<typeof loginRequestSchema>;
 export type PurchaseRequest = z.infer<typeof purchaseRequestSchema>;
+export type PodcastRequest = z.infer<typeof podcastRequestSchema>;

@@ -12,6 +12,7 @@ import PassageDiscussionModal from "@/components/passage-discussion-modal";
 import QuizModal from "@/components/quiz-modal";
 import StudyGuideModal from "@/components/study-guide-modal";
 import StudentTestModal from "@/components/student-test-modal";
+import PodcastModal from "@/components/podcast-modal";
 
 import ChunkingModal from "@/components/chunking-modal";
 import AuthModal from "@/components/auth-modal";
@@ -43,6 +44,8 @@ export default function LivingBook() {
   const [studentTestModalOpen, setStudentTestModalOpen] = useState(false);
   const [selectedTextForStudentTest, setSelectedTextForStudentTest] = useState<string>("");
   const [studentTestChunkIndex, setStudentTestChunkIndex] = useState<number | null>(null);
+  const [podcastModalOpen, setPodcastModalOpen] = useState(false);
+  const [selectedTextForPodcast, setSelectedTextForPodcast] = useState<string>("");
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
   const [pendingChunkText, setPendingChunkText] = useState<string>("");
@@ -143,6 +146,16 @@ export default function LivingBook() {
       setStudentTestChunkIndex(null);
       setStudentTestModalOpen(true);
     }
+  };
+
+  const handleGeneratePodcastFromSelection = (text: string) => {
+    setSelectedTextForPodcast(text);
+    setPodcastModalOpen(true);
+  };
+
+  const handlePodcastModalClose = () => {
+    setPodcastModalOpen(false);
+    setSelectedTextForPodcast("");
   };
 
   const handleStudyGuideModalClose = () => {
@@ -318,6 +331,7 @@ export default function LivingBook() {
             onPassageDiscussion={handlePassageDiscussion}
             onCreateStudyGuide={handleCreateStudyGuideFromSelection}
             onTestMe={handleTestMeFromSelection}
+            onGeneratePodcast={handleGeneratePodcastFromSelection}
           />
         </main>
 
@@ -381,7 +395,13 @@ export default function LivingBook() {
         chunkIndex={studentTestChunkIndex ?? undefined}
       />
 
-
+      {/* Podcast Modal */}
+      <PodcastModal
+        isOpen={podcastModalOpen}
+        onClose={handlePodcastModalClose}
+        selectedText={selectedTextForPodcast}
+        defaultModel={selectedModel}
+      />
 
       {/* Chunking Modal */}
       <ChunkingModal

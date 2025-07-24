@@ -1,4 +1,4 @@
-import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
+import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, podcastSummaries, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type PodcastSummary, type InsertPodcastSummary, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -20,6 +20,9 @@ export interface IStorage {
   createStudentTest(studentTest: InsertStudentTest): Promise<StudentTest>;
   getStudentTests(): Promise<StudentTest[]>;
   getStudentTestById(id: number): Promise<StudentTest | null>;
+  createPodcastSummary(podcastSummary: InsertPodcastSummary): Promise<PodcastSummary>;
+  getPodcastSummaries(): Promise<PodcastSummary[]>;
+  getPodcastSummaryById(id: number): Promise<PodcastSummary | null>;
   
   // User management
   createUser(user: InsertUser): Promise<User>;
@@ -524,6 +527,21 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(testResults.completedAt));
   }
 
+  // Podcast summary management methods
+  async createPodcastSummary(insertPodcastSummary: InsertPodcastSummary): Promise<PodcastSummary> {
+    const [podcastSummary] = await db.insert(podcastSummaries).values(insertPodcastSummary).returning();
+    return podcastSummary;
+  }
+
+  async getPodcastSummaries(): Promise<PodcastSummary[]> {
+    return await db.select().from(podcastSummaries)
+      .orderBy(desc(podcastSummaries.timestamp));
+  }
+
+  async getPodcastSummaryById(id: number): Promise<PodcastSummary | null> {
+    const [podcastSummary] = await db.select().from(podcastSummaries).where(eq(podcastSummaries.id, id));
+    return podcastSummary || null;
+  }
 }
 
 export const storage = new DatabaseStorage();

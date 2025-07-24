@@ -11,7 +11,8 @@ import { generatePDF } from "./services/pdf-generator";
 import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
-import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
+import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, podcastRequestSchema, type AIModel } from "@shared/schema";
+import PodcastGenerator from "./services/podcast-generator";
 import multer from "multer";
 
 declare module 'express-session' {
@@ -649,6 +650,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching study guides:", error);
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Podcast generation endpoint with authentication
+  app.post("/api/generate-podcast", async (req, res) => {
+    try {
+      const { sourceText, model } = podcastRequestSchema.parse(req.body);
+      const user = await getCurrentUser(req);
+      
+      const podcastGenerator = new PodcastGenerator();
+      const { script, audioPath } = await podcastGenerator.generatePodcast(sourceText, model);
+      
+      // Check if user has access to full features
+      let finalScript = script;
+      let isPreview = false;
+      
+      if (!canAccessFeature(user)) {
+        finalScript = getPreviewResponse(script, !user);
+        isPreview = true;
+      } else {
+        // Deduct 5 credits for podcast generation (skip for admin)
+        if (!isAdmin(user)) {
+          await storage.updateUserCredits(user!.id, user!.credits - 5);
+        }
+      }
+      
+      const savedPodcast = await storage.createPodcastSummary({
+        sourceText,
+        script: finalScript,
+        audioPath,
+        model
+      });
+      
+      res.json({ 
+        podcast: {
+          id: savedPodcast.id,
+          script: finalScript,
+          audioPath,
+          timestamp: savedPodcast.timestamp
+        },
+        isPreview 
+      });
+    } catch (error) {
+      console.error("Podcast generation error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate podcast" });
     }
   });
 

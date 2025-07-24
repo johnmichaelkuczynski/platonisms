@@ -16,6 +16,7 @@ interface DocumentContentProps {
   onPassageDiscussion?: (text: string) => void;
   onCreateStudyGuide?: (text: string) => void;
   onTestMe?: (text: string) => void;
+  onGeneratePodcast?: (text: string) => void;
 }
 
 export default function DocumentContent({ 
@@ -24,7 +25,8 @@ export default function DocumentContent({
   onRewriteFromSelection, 
   onPassageDiscussion, 
   onCreateStudyGuide,
-  onTestMe
+  onTestMe,
+  onGeneratePodcast
 }: DocumentContentProps) {
   const { selection, isSelecting, clearSelection, highlightSelection, removeHighlights } = useTextSelection();
   const [showChunkingModal, setShowChunkingModal] = useState(false);
@@ -96,6 +98,13 @@ export default function DocumentContent({
   const handleTestMe = (text: string) => {
     if (onTestMe) {
       onTestMe(text);
+    }
+    // Don't clear selection - let user choose other actions if needed
+  };
+
+  const handleGeneratePodcast = (text: string) => {
+    if (onGeneratePodcast) {
+      onGeneratePodcast(text);
     }
     // Don't clear selection - let user choose other actions if needed
   };
@@ -307,6 +316,7 @@ export default function DocumentContent({
           onRewrite={handleRewrite}
           onCreateStudyGuide={handleCreateStudyGuide}
           onTestMe={handleTestMe}
+          onGeneratePodcast={handleGeneratePodcast}
           onHighlight={handleHighlight}
           onClear={clearSelection}
         />
