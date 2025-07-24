@@ -750,10 +750,19 @@ Preferred communication style: Simple, everyday language.
   - Added server/services/tts-service.ts with MP3 audio file generation and storage
   - Created comprehensive voice selection: Alloy, Echo, Fable, Onyx, Nova, Shimmer
   - Added audio generation checkbox with "+4 credits" pricing indication
-  - Built complete audio playback system with Play/Pause controls and progress
+  - Built complete audio playbook system with Play/Pause controls and progress
   - Implemented dual download options: script as TXT and audio as MP3 files
   - Added proper error handling for TTS failures with clear user feedback
   - Audio files stored in /dist/audio directory and served via Express static route
   - Enhanced UI with audio success indicators and embedded HTML5 audio player
   - System now generates REAL podcast audio files, not just text summaries
   - All OpenAI API keys properly configured and TTS functionality fully operational
+- July 24, 2025: ISOLATED SESSION KEYS AND LAYOUT OPTIMIZATION - Complete chat separation and UI improvement
+  - IMPLEMENTED isolated session key system using `newcriticalreasoning_chat_${req.sessionID}` format
+  - Added sessionKey column to chat_messages database table for complete separation
+  - Updated storage interface and implementations to support book-specific chat sessions
+  - Modified all chat endpoints (/api/chat, /api/chat/history, /api/chat/clear) to use isolated sessions
+  - Complete separation of chat history between different books achieved
+  - LAYOUT OPTIMIZATION: Made document area twice as wide (max-w-7xl) for better readability
+  - Reduced chat panel width by half (w-48 instead of w-96) to maximize document space
+  - Enhanced text reading experience with improved space allocation

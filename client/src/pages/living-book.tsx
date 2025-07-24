@@ -327,8 +327,8 @@ export default function LivingBook() {
           <NavigationSidebar />
         </div>
 
-        {/* Main Content Area - MOBILE FIX: Maximum space, normal on desktop */}
-        <main className="flex-1 max-w-none md:max-w-5xl px-1 md:px-4">
+        {/* Main Content Area - WIDER: Double the width for better readability */}
+        <main className="flex-1 max-w-none md:max-w-7xl px-1 md:px-4">
           {/* Document Content */}
           <DocumentContent 
             mathMode={mathMode}
@@ -342,8 +342,8 @@ export default function LivingBook() {
           />
         </main>
 
-        {/* Chat Panel - MOBILE FIX: Very narrow on mobile, normal on desktop */}
-        <div className="w-4 md:w-96 flex-shrink-0">
+        {/* Chat Panel - NARROWER: Half the width to give more space to document */}
+        <div className="w-4 md:w-48 flex-shrink-0">
           <ChatInterface 
             selectedModel={selectedModel} 
             mathMode={mathMode}
