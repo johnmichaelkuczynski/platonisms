@@ -14,7 +14,6 @@ import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalT
 import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, podcastRequestSchema, type AIModel } from "@shared/schema";
 import PodcastGenerator from "./services/podcast-generator";
 import multer from "multer";
-import path from "path";
 
 declare module 'express-session' {
   interface SessionData {
@@ -657,11 +656,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Podcast generation endpoint with authentication
   app.post("/api/generate-podcast", async (req, res) => {
     try {
-      const { sourceText, model, instructions } = podcastRequestSchema.parse(req.body);
+      const { sourceText, model } = podcastRequestSchema.parse(req.body);
       const user = await getCurrentUser(req);
       
       const podcastGenerator = new PodcastGenerator();
-      const { script, audioPath } = await podcastGenerator.generatePodcastSummary(sourceText, model, instructions);
+      const { script, audioPath } = await podcastGenerator.generatePodcast(sourceText, model);
       
       // Check if user has access to full features
       let finalScript = script;
@@ -1248,10 +1247,6 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       feedback
     };
   }
-
-  // Serve audio files from the audio directory
-  const audioDir = path.join(import.meta.dirname, "audio");
-  app.use("/audio", express.static(audioDir));
 
   const httpServer = createServer(app);
   return httpServer;
