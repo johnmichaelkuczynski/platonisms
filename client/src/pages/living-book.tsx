@@ -407,7 +407,7 @@ export default function LivingBook() {
         isOpen={podcastModalOpen}
         onClose={handlePodcastModalClose}
         selectedText={selectedTextForPodcast}
-        model={selectedModel}
+        defaultModel={selectedModel}
       />
 
 

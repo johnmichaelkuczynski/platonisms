@@ -1219,6 +1219,7 @@ FEEDBACK: [explanation focusing on content accuracy]`;
         credits: 999999999
       };
 
+      console.log("Request body:", req.body); // Debug log
       const validatedData = podcastRequestSchema.parse(req.body);
       const { selectedText, instructionType, customInstructions, model } = validatedData;
 
