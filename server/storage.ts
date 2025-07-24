@@ -3,9 +3,9 @@ import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
-  getChatMessages(): Promise<ChatMessage[]>;
-  clearChatMessages(): Promise<void>;
+  createChatMessage(message: InsertChatMessage, sessionKey?: string): Promise<ChatMessage>;
+  getChatMessages(sessionKey?: string): Promise<ChatMessage[]>;
+  clearChatMessages(sessionKey?: string): Promise<void>;
   createInstruction(instruction: InsertInstruction): Promise<Instruction>;
   getInstructions(): Promise<Instruction[]>;
   createRewrite(rewrite: InsertRewrite): Promise<Rewrite>;
@@ -50,6 +50,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private chatMessages: Map<number, ChatMessage>;
+  private chatMessagesBySession: Map<string, Set<number>>; // sessionKey -> Set of message IDs
   private instructions: Map<number, Instruction>;
   private rewrites: Map<number, Rewrite>;
   private quizzes: Map<number, Quiz>;
@@ -74,6 +75,7 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.chatMessages = new Map();
+    this.chatMessagesBySession = new Map();
     this.instructions = new Map();
     this.rewrites = new Map();
     this.quizzes = new Map();
@@ -97,7 +99,7 @@ export class MemStorage implements IStorage {
     this.currentPurchaseId = 1;
   }
 
-  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+  async createChatMessage(insertMessage: InsertChatMessage, sessionKey: string = 'default'): Promise<ChatMessage> {
     const id = this.currentChatId++;
     const message: ChatMessage = {
       ...insertMessage,
@@ -105,16 +107,30 @@ export class MemStorage implements IStorage {
       timestamp: new Date(),
     };
     this.chatMessages.set(id, message);
+    
+    // Track message by session
+    if (!this.chatMessagesBySession.has(sessionKey)) {
+      this.chatMessagesBySession.set(sessionKey, new Set());
+    }
+    this.chatMessagesBySession.get(sessionKey)!.add(id);
+    
     return message;
   }
 
-  async getChatMessages(): Promise<ChatMessage[]> {
-    return Array.from(this.chatMessages.values())
+  async getChatMessages(sessionKey: string = 'default'): Promise<ChatMessage[]> {
+    const sessionMessageIds = this.chatMessagesBySession.get(sessionKey) || new Set();
+    return Array.from(sessionMessageIds)
+      .map(id => this.chatMessages.get(id))
+      .filter((msg): msg is ChatMessage => msg !== undefined)
       .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }
 
-  async clearChatMessages(): Promise<void> {
-    this.chatMessages.clear();
+  async clearChatMessages(sessionKey: string = 'default'): Promise<void> {
+    const sessionMessageIds = this.chatMessagesBySession.get(sessionKey) || new Set();
+    // Remove messages from main storage
+    sessionMessageIds.forEach(id => this.chatMessages.delete(id));
+    // Clear session tracking
+    this.chatMessagesBySession.delete(sessionKey);
   }
 
   async createInstruction(insertInstruction: InsertInstruction): Promise<Instruction> {
@@ -357,20 +373,23 @@ export class MemStorage implements IStorage {
 
 // Database Storage Implementation
 export class DatabaseStorage implements IStorage {
-  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+  async createChatMessage(insertMessage: InsertChatMessage, sessionKey: string = 'default'): Promise<ChatMessage> {
     const [message] = await db.insert(chatMessages).values({
       ...insertMessage,
+      sessionKey,
       context: insertMessage.context || null
     }).returning();
     return message;
   }
 
-  async getChatMessages(): Promise<ChatMessage[]> {
-    return await db.select().from(chatMessages).orderBy(desc(chatMessages.timestamp));
+  async getChatMessages(sessionKey: string = 'default'): Promise<ChatMessage[]> {
+    return await db.select().from(chatMessages)
+      .where(eq(chatMessages.sessionKey, sessionKey))
+      .orderBy(desc(chatMessages.timestamp));
   }
 
-  async clearChatMessages(): Promise<void> {
-    await db.delete(chatMessages);
+  async clearChatMessages(sessionKey: string = 'default'): Promise<void> {
+    await db.delete(chatMessages).where(eq(chatMessages.sessionKey, sessionKey));
   }
 
   async createInstruction(insertInstruction: InsertInstruction): Promise<Instruction> {

@@ -287,8 +287,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { message, model } = chatRequestSchema.parse(req.body);
       const user = await getCurrentUser(req);
       
+      // Create isolated session key for this book
+      const sessionKey = `newcriticalreasoning_chat_${req.sessionID}`;
+      
       // Get conversation history for context
-      const chatHistory = await storage.getChatMessages();
+      const chatHistory = await storage.getChatMessages(sessionKey);
       
       const fullResponse = await generateAIResponse(model, message, false, chatHistory);
       
@@ -311,7 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         response: fullResponse,
         model,
         context: { documentContext: true }
-      });
+      }, sessionKey);
       
       res.json({ response, isPreview });
     } catch (error) {
@@ -361,7 +364,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get chat history
   app.get("/api/chat/history", async (req, res) => {
     try {
-      const messages = await storage.getChatMessages();
+      // Create isolated session key for this book
+      const sessionKey = `newcriticalreasoning_chat_${req.sessionID}`;
+      const messages = await storage.getChatMessages(sessionKey);
       res.json(messages);
     } catch (error) {
       console.error("Chat history error:", error);
@@ -372,7 +377,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Clear chat history
   app.delete("/api/chat/clear", async (req, res) => {
     try {
-      await storage.clearChatMessages();
+      // Create isolated session key for this book
+      const sessionKey = `newcriticalreasoning_chat_${req.sessionID}`;
+      await storage.clearChatMessages(sessionKey);
       res.json({ success: true });
     } catch (error) {
       console.error("Clear chat error:", error);
