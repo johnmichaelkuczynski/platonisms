@@ -298,9 +298,9 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
                 </div>
                 <ScrollArea className="h-full">
                   <div className="p-4">
-                    <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed">
-                      {podcast.script}
-                    </pre>
+                    <div className="whitespace-pre-wrap text-sm leading-relaxed font-sans">
+                      {podcast.script || "No script content available"}
+                    </div>
                   </div>
                 </ScrollArea>
               </div>
