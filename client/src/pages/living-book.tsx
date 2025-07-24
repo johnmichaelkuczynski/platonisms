@@ -149,6 +149,7 @@ export default function LivingBook() {
   };
 
   const handleGeneratePodcastFromSelection = (text: string) => {
+    console.log("Opening podcast modal with text:", text.substring(0, 100) + "...");
     setSelectedTextForPodcast(text);
     setPodcastModalOpen(true);
   };

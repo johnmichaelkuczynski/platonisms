@@ -63,7 +63,8 @@ Generate the podcast script following the structure above:`;
 
   async generateAudio(script: string): Promise<{ audioPath?: string; audioBuffer?: Buffer }> {
     if (!this.azureSpeechService) {
-      throw new Error("Azure Speech Service not configured");
+      console.log("Azure Speech Service not configured - audio generation skipped");
+      return {};
     }
 
     try {
@@ -88,7 +89,8 @@ Generate the podcast script following the structure above:`;
       };
     } catch (error) {
       console.error("Error generating audio:", error);
-      throw new Error("Failed to generate audio");
+      console.log("Audio generation failed, returning script without audio");
+      return {}; // Return empty object instead of throwing
     }
   }
 

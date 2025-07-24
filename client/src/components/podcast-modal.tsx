@@ -50,6 +50,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
       return response;
     },
     onSuccess: (data: any) => {
+      console.log("Podcast generation successful:", data);
       setPodcast(data.podcast);
       setIsPreview(data.isPreview || false);
       if (data.isPreview) {
@@ -61,7 +62,7 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
       } else {
         toast({
           title: "Podcast Generated",
-          description: "Your podcast summary is ready with audio narration",
+          description: data.podcast?.audioPath ? "Your podcast summary is ready with audio narration" : "Your podcast summary is ready (audio generation unavailable)",
           variant: "default"
         });
       }
@@ -149,6 +150,8 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
     }
     setPodcast(null);
     setIsPreview(false);
+    setCurrentTime(0);
+    setDuration(0);
     onClose();
   };
 
@@ -188,6 +191,13 @@ export default function PodcastModal({ isOpen, onClose, selectedText, defaultMod
               </p>
             </ScrollArea>
           </div>
+
+          {/* Debug Info */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+              Debug: Podcast state = {podcast ? 'Generated' : 'Not generated'}, Loading = {generatePodcastMutation.isPending ? 'Yes' : 'No'}
+            </div>
+          )}
 
           {/* Generation Controls */}
           {!podcast && (
