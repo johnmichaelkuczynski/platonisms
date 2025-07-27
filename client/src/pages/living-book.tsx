@@ -244,9 +244,13 @@ export default function LivingBook() {
       }
 
       const data = await response.json();
+      console.log('Suggested readings response:', data);
       
-      // Add to chat interface
-      setSelectedTextForChat(`**Suggested Readings for Selected Text:**\n\n${data.suggestedReadings.readingsList}`);
+      // Add to chat interface - ensure we get the actual content
+      const readingsContent = data.suggestedReadings?.readingsList || data.readingsList || JSON.stringify(data);
+      console.log('Readings content to display:', readingsContent);
+      
+      setSelectedTextForChat(`**Suggested Readings for Selected Text:**\n\n${readingsContent}`);
 
       toast({
         title: "Suggested Readings Generated",
