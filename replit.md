@@ -776,3 +776,9 @@ Preferred communication style: Simple, everyday language.
   - Users can select text, generate conversational podcast scripts with AI narration using OpenAI TTS
   - Audio files properly stored in /dist/audio directory and served via Express static routes
   - Complete workflow: text selection → AI script generation → TTS audio creation → in-app playback and download
+- July 27, 2025: CRITICAL EXPORT FUNCTION FIX - Application stability restored
+  - FIXED missing getFullDocumentContent export function that was causing import errors
+  - Resolved "doesn't provide an export named: 'getFullDocumentContent'" error
+  - Added proper export function to shared/book-content.ts without modifying existing content
+  - Application now loads properly with all AI functionality working
+  - Preserved all existing book content as requested by user
