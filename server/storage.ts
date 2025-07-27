@@ -1,4 +1,4 @@
-import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
+import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, cognitiveMaps, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type CognitiveMap, type InsertCognitiveMap, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -20,6 +20,9 @@ export interface IStorage {
   createStudentTest(studentTest: InsertStudentTest): Promise<StudentTest>;
   getStudentTests(): Promise<StudentTest[]>;
   getStudentTestById(id: number): Promise<StudentTest | null>;
+  createCognitiveMap(cognitiveMap: InsertCognitiveMap): Promise<CognitiveMap>;
+  getCognitiveMaps(): Promise<CognitiveMap[]>;
+  getCognitiveMapById(id: number): Promise<CognitiveMap | null>;
 
   
   // User management
@@ -56,6 +59,7 @@ export class MemStorage implements IStorage {
   private quizzes: Map<number, Quiz>;
   private studyGuides: Map<number, StudyGuide>;
   private studentTests: Map<number, StudentTest>;
+  private cognitiveMaps: Map<number, CognitiveMap>;
 
   private testResults: Map<number, TestResult>;
   private users: Map<number, User>;
@@ -68,6 +72,7 @@ export class MemStorage implements IStorage {
   private currentQuizId: number;
   private currentStudyGuideId: number;
   private currentStudentTestId: number;
+  private currentCognitiveMapId: number;
 
   private currentTestResultId: number;
   private currentUserId: number;
@@ -81,6 +86,7 @@ export class MemStorage implements IStorage {
     this.quizzes = new Map();
     this.studyGuides = new Map();
     this.studentTests = new Map();
+    this.cognitiveMaps = new Map();
 
     this.testResults = new Map();
     this.users = new Map();
@@ -93,6 +99,7 @@ export class MemStorage implements IStorage {
     this.currentQuizId = 1;
     this.currentStudyGuideId = 1;
     this.currentStudentTestId = 1;
+    this.currentCognitiveMapId = 1;
 
     this.currentTestResultId = 1;
     this.currentUserId = 1;
@@ -227,6 +234,26 @@ export class MemStorage implements IStorage {
 
   async getStudentTestById(id: number): Promise<StudentTest | null> {
     return this.studentTests.get(id) || null;
+  }
+
+  async createCognitiveMap(insertCognitiveMap: InsertCognitiveMap): Promise<CognitiveMap> {
+    const id = this.currentCognitiveMapId++;
+    const cognitiveMap: CognitiveMap = {
+      ...insertCognitiveMap,
+      id,
+      timestamp: new Date(),
+    };
+    this.cognitiveMaps.set(id, cognitiveMap);
+    return cognitiveMap;
+  }
+
+  async getCognitiveMaps(): Promise<CognitiveMap[]> {
+    return Array.from(this.cognitiveMaps.values())
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }
+
+  async getCognitiveMapById(id: number): Promise<CognitiveMap | null> {
+    return this.cognitiveMaps.get(id) || null;
   }
 
   // User management methods
@@ -468,6 +495,23 @@ export class DatabaseStorage implements IStorage {
   async getStudentTestById(id: number): Promise<StudentTest | null> {
     const [studentTest] = await db.select().from(studentTests).where(eq(studentTests.id, id));
     return studentTest || null;
+  }
+
+  async createCognitiveMap(insertCognitiveMap: InsertCognitiveMap): Promise<CognitiveMap> {
+    const [cognitiveMap] = await db.insert(cognitiveMaps).values({
+      ...insertCognitiveMap,
+      chunkIndex: insertCognitiveMap.chunkIndex ?? null
+    }).returning();
+    return cognitiveMap;
+  }
+
+  async getCognitiveMaps(): Promise<CognitiveMap[]> {
+    return await db.select().from(cognitiveMaps).orderBy(desc(cognitiveMaps.timestamp));
+  }
+
+  async getCognitiveMapById(id: number): Promise<CognitiveMap | null> {
+    const [cognitiveMap] = await db.select().from(cognitiveMaps).where(eq(cognitiveMaps.id, id));
+    return cognitiveMap || null;
   }
 
   // User management methods with admin support

@@ -13,6 +13,7 @@ import QuizModal from "@/components/quiz-modal";
 import StudyGuideModal from "@/components/study-guide-modal";
 import StudentTestModal from "@/components/student-test-modal";
 import PodcastModal from "@/components/podcast-modal";
+import CognitiveMapModal from "@/components/cognitive-map-modal";
 
 
 import ChunkingModal from "@/components/chunking-modal";
@@ -47,6 +48,9 @@ export default function LivingBook() {
   const [studentTestChunkIndex, setStudentTestChunkIndex] = useState<number | null>(null);
   const [podcastModalOpen, setPodcastModalOpen] = useState(false);
   const [selectedTextForPodcast, setSelectedTextForPodcast] = useState<string>("");
+  const [cognitiveMapModalOpen, setCognitiveMapModalOpen] = useState(false);
+  const [selectedTextForCognitiveMap, setSelectedTextForCognitiveMap] = useState<string>("");
+  const [cognitiveMapChunkIndex, setCognitiveMapChunkIndex] = useState<number | null>(null);
 
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
@@ -172,6 +176,25 @@ export default function LivingBook() {
   const handlePodcastModalClose = () => {
     setPodcastModalOpen(false);
     setSelectedTextForPodcast("");
+  };
+
+  const handleCreateCognitiveMapFromSelection = (text: string) => {
+    const wordCount = text.split(/\s+/).length;
+    
+    if (wordCount > 1000) {
+      setPendingChunkText(text);
+      setChunkingModalOpen(true);
+    } else {
+      setSelectedTextForCognitiveMap(text);
+      setCognitiveMapChunkIndex(null);
+      setCognitiveMapModalOpen(true);
+    }
+  };
+
+  const handleCognitiveMapModalClose = () => {
+    setCognitiveMapModalOpen(false);
+    setSelectedTextForCognitiveMap("");
+    setCognitiveMapChunkIndex(null);
   };
 
 
@@ -338,7 +361,7 @@ export default function LivingBook() {
             onCreateStudyGuide={handleCreateStudyGuideFromSelection}
             onTestMe={handleTestMeFromSelection}
             onGeneratePodcast={handleGeneratePodcastFromSelection}
-
+            onCreateCognitiveMap={handleCreateCognitiveMapFromSelection}
           />
         </main>
 
@@ -408,6 +431,15 @@ export default function LivingBook() {
         onClose={handlePodcastModalClose}
         selectedText={selectedTextForPodcast}
         defaultModel={selectedModel}
+      />
+
+      {/* Cognitive Map Modal */}
+      <CognitiveMapModal
+        isOpen={cognitiveMapModalOpen}
+        onClose={handleCognitiveMapModalClose}
+        sourceText={selectedTextForCognitiveMap}
+        chunkIndex={cognitiveMapChunkIndex}
+        selectedModel={selectedModel}
       />
 
 

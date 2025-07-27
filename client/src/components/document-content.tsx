@@ -17,6 +17,7 @@ interface DocumentContentProps {
   onCreateStudyGuide?: (text: string) => void;
   onTestMe?: (text: string) => void;
   onGeneratePodcast?: (text: string) => void;
+  onCreateCognitiveMap?: (text: string) => void;
 }
 
 export default function DocumentContent({ 
@@ -26,7 +27,8 @@ export default function DocumentContent({
   onPassageDiscussion, 
   onCreateStudyGuide,
   onTestMe,
-  onGeneratePodcast
+  onGeneratePodcast,
+  onCreateCognitiveMap
 }: DocumentContentProps) {
   const { selection, isSelecting, clearSelection, highlightSelection, removeHighlights } = useTextSelection();
   const [showChunkingModal, setShowChunkingModal] = useState(false);
@@ -105,6 +107,23 @@ export default function DocumentContent({
   const handleGeneratePodcast = (text: string) => {
     if (onGeneratePodcast) {
       onGeneratePodcast(text);
+    }
+    // Don't clear selection - let user choose other actions if needed
+  };
+
+  const handleCreateCognitiveMap = (text: string) => {
+    // Check if text is large and needs chunking
+    const wordCount = text.split(/\s+/).length;
+    
+    if (wordCount > 1000) {
+      // Open chunking modal for large selections
+      setShowChunkingModal(true);
+      setSelectedTextForChunking(text);
+    } else {
+      // For smaller texts, use normal selection
+      if (onCreateCognitiveMap) {
+        onCreateCognitiveMap(text);
+      }
     }
     // Don't clear selection - let user choose other actions if needed
   };
@@ -303,6 +322,7 @@ export default function DocumentContent({
           onCreateStudyGuide={handleCreateStudyGuide}
           onTestMe={handleTestMe}
           onGeneratePodcast={handleGeneratePodcast}
+          onCreateCognitiveMap={handleCreateCognitiveMap}
           onHighlight={handleHighlight}
           onClear={clearSelection}
         />

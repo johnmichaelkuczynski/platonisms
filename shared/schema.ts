@@ -102,6 +102,17 @@ export const testResults = pgTable("test_results", {
   completedAt: timestamp("completed_at").defaultNow().notNull(),
 });
 
+export const cognitiveMaps = pgTable("cognitive_maps", {
+  id: serial("id").primaryKey(),
+  sourceText: text("source_text").notNull(),
+  instructions: text("instructions").notNull(),
+  mapContent: text("map_content").notNull(),
+  mermaidDiagram: text("mermaid_diagram").notNull(),
+  model: text("model").notNull(),
+  chunkIndex: integer("chunk_index"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 
 
 
@@ -185,6 +196,15 @@ export const insertTestResultSchema = createInsertSchema(testResults).pick({
   correctCount: true,
 });
 
+export const insertCognitiveMapSchema = createInsertSchema(cognitiveMaps).pick({
+  sourceText: true,
+  instructions: true,
+  mapContent: true,
+  mermaidDiagram: true,
+  model: true,
+  chunkIndex: true,
+});
+
 
 
 
@@ -212,6 +232,18 @@ export type Purchase = typeof purchases.$inferSelect;
 export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;
 export type TestResult = typeof testResults.$inferSelect;
 export type InsertTestResult = z.infer<typeof insertTestResultSchema>;
+export type CognitiveMap = typeof cognitiveMaps.$inferSelect;
+export type InsertCognitiveMap = z.infer<typeof insertCognitiveMapSchema>;
+
+// Request schemas for API
+export const generateCognitiveMapRequestSchema = z.object({
+  sourceText: z.string(),
+  instructions: z.string().optional(),
+  model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
+  chunkIndex: z.number().optional(),
+});
+
+export type GenerateCognitiveMapRequest = z.infer<typeof generateCognitiveMapRequestSchema>;
 
 
 

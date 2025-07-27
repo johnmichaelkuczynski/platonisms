@@ -5,6 +5,7 @@ import { join } from "path";
 import session from "express-session";
 import { storage } from "./storage";
 import { generateAIResponse, generateRewrite, generatePassageExplanation, generatePassageDiscussionResponse, generateQuiz, generateStudyGuide, generateStudentTest } from "./services/ai-models";
+import { generateCognitiveMap } from "./services/cognitive-map-generator";
 
 import { getFullDocumentContent } from "./services/document-processor";
 
@@ -12,7 +13,7 @@ import { generatePDF } from "./services/pdf-generator";
 import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
-import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
+import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, generateCognitiveMapRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
 import { podcastRequestSchema } from "../shared/podcast-schema";
 import { generatePodcastScript } from "./services/podcast-generator";
 
@@ -659,6 +660,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(studyGuides);
     } catch (error) {
       console.error("Error fetching study guides:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Cognitive map generation endpoint with authentication
+  app.post("/api/generate-cognitive-map", async (req, res) => {
+    try {
+      const { sourceText, instructions, model, chunkIndex } = generateCognitiveMapRequestSchema.parse(req.body);
+      const user = await getCurrentUser(req);
+      
+      const finalInstructions = instructions || 
+        "Read the selected text and output a concept map of the main thesis, logical dependencies, key definitions, and conceptual relationships. Structure the output as a hierarchy or dependency tree in text form.";
+      
+      const { mapContent, mermaidDiagram } = await generateCognitiveMap(sourceText, finalInstructions, model);
+      
+      // Check if user has access to full features
+      let cognitiveMapContent = mapContent;
+      let isPreview = false;
+      
+      if (!canAccessFeature(user)) {
+        cognitiveMapContent = getPreviewResponse(mapContent, !user);
+        isPreview = true;
+      } else {
+        // Deduct 1 credit for full response (skip for admin)
+        if (!isAdmin(user)) {
+          await storage.updateUserCredits(user!.id, user!.credits - 1);
+        }
+      }
+      
+      const savedCognitiveMap = await storage.createCognitiveMap({
+        sourceText,
+        mapContent,
+        mermaidDiagram,
+        instructions: finalInstructions,
+        model,
+        chunkIndex
+      });
+      
+      res.json({ 
+        cognitiveMap: {
+          id: savedCognitiveMap.id,
+          mapContent: cognitiveMapContent, // Return preview or full content based on user status
+          mermaidDiagram: isPreview ? "" : mermaidDiagram, // Only include diagram for full access
+          timestamp: savedCognitiveMap.timestamp
+        },
+        isPreview 
+      });
+    } catch (error) {
+      console.error("Cognitive map generation error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate cognitive map" });
+    }
+  });
+
+  // Get cognitive maps endpoint
+  app.get("/api/cognitive-maps", async (req, res) => {
+    try {
+      const cognitiveMaps = await storage.getCognitiveMaps();
+      res.json(cognitiveMaps);
+    } catch (error) {
+      console.error("Error fetching cognitive maps:", error);
       res.status(500).json({ error: error.message });
     }
   });
