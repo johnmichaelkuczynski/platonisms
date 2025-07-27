@@ -38,10 +38,22 @@ export default function CognitiveMapModal({
 
   const generateMapMutation = useMutation({
     mutationFn: async (data: { sourceText: string; instructions: string; model: AIModel; chunkIndex?: number }) => {
-      return apiRequest("/api/generate-cognitive-map", {
+      const response = await fetch("/api/generate-cognitive-map", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("Raw API response:", result);
+      return result;
     },
     onSuccess: (response: any) => {
       console.log("Cognitive map response:", response);
