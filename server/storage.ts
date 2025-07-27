@@ -75,6 +75,7 @@ export class MemStorage implements IStorage {
   private studyGuides: Map<number, StudyGuide>;
   private studentTests: Map<number, StudentTest>;
   private cognitiveMaps: Map<number, CognitiveMap>;
+  private suggestedReadings: Map<number, SuggestedReadings>;
 
   private testResults: Map<number, TestResult>;
   private users: Map<number, User>;
@@ -88,6 +89,7 @@ export class MemStorage implements IStorage {
   private currentStudyGuideId: number;
   private currentStudentTestId: number;
   private currentCognitiveMapId: number;
+  private currentSuggestedReadingsId: number;
 
   private currentTestResultId: number;
   private currentUserId: number;
@@ -102,6 +104,7 @@ export class MemStorage implements IStorage {
     this.studyGuides = new Map();
     this.studentTests = new Map();
     this.cognitiveMaps = new Map();
+    this.suggestedReadings = new Map();
 
     this.testResults = new Map();
     this.users = new Map();
@@ -115,6 +118,7 @@ export class MemStorage implements IStorage {
     this.currentStudyGuideId = 1;
     this.currentStudentTestId = 1;
     this.currentCognitiveMapId = 1;
+    this.currentSuggestedReadingsId = 1;
 
     this.currentTestResultId = 1;
     this.currentUserId = 1;
@@ -414,13 +418,13 @@ export class MemStorage implements IStorage {
 
   // Suggested Readings methods
   async createSuggestedReadings(insertSuggestedReadings: InsertSuggestedReadings): Promise<SuggestedReadings> {
-    const id = this.currentCognitiveMapId++; // Reuse existing ID counter
+    const id = this.currentSuggestedReadingsId++;
     const suggestedReadings: SuggestedReadings = {
       ...insertSuggestedReadings,
       id,
       timestamp: new Date(),
     };
-    // Store in cognitive maps for now (simple implementation)
+    this.suggestedReadings.set(id, suggestedReadings);
     return suggestedReadings;
   }
 

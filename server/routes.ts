@@ -1393,6 +1393,10 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       console.log("Suggested readings request body:", req.body);
       const { sourceText, model, chunkIndex, instructions } = req.body;
       
+      if (!sourceText || !model) {
+        return res.status(400).json({ error: "Missing required fields: sourceText and model" });
+      }
+      
       const user = await getCurrentUser(req);
       if (!user) {
         return res.status(401).json({ error: "User not authenticated" });
