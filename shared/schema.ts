@@ -302,3 +302,16 @@ export type RegisterRequest = z.infer<typeof registerRequestSchema>;
 export type LoginRequest = z.infer<typeof loginRequestSchema>;
 export type PurchaseRequest = z.infer<typeof purchaseRequestSchema>;
 
+// Book content types
+export interface BookSection {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export interface BookContent {
+  title: string;
+  author: string;
+  sections: BookSection[];
+}
+
