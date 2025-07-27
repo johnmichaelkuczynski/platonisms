@@ -8,6 +8,7 @@ import { generateAIResponse, generateRewrite, generatePassageExplanation, genera
 import { generateCognitiveMap } from "./services/cognitive-map-generator";
 import { generateSummaryWithThesis } from "./services/summary-with-thesis-generator";
 import { generateThesisDeepDive } from "./services/thesis-deep-dive-generator";
+import { generateSuggestedReadings } from "./services/suggested-readings-generator";
 
 import { getFullDocumentContent } from "./services/document-processor";
 
@@ -15,7 +16,7 @@ import { generatePDF } from "./services/pdf-generator";
 import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
-import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, generateCognitiveMapRequestSchema, summaryWithThesisRequestSchema, thesisDeepDiveRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
+import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, generateCognitiveMapRequestSchema, summaryWithThesisRequestSchema, thesisDeepDiveRequestSchema, insertSuggestedReadingsSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
 import { podcastRequestSchema } from "../shared/podcast-schema";
 import { generatePodcastScript } from "./services/podcast-generator";
 
@@ -1385,6 +1386,56 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       feedback
     };
   }
+
+  // Generate Suggested Readings endpoint
+  app.post("/api/generate-suggested-readings", async (req, res) => {
+    try {
+      const { sourceText, model, chunkIndex } = insertSuggestedReadingsSchema.parse(req.body);
+      
+      const user = await getCurrentUser(req);
+      if (!user) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      // Check if user has access to this feature
+      const hasAccess = canAccessFeature(user);
+      
+      // Generate suggested readings using AI
+      const result = await generateSuggestedReadings({
+        sourceText,
+        model,
+        chunkIndex
+      });
+
+      // Determine if this should be a preview based on user access
+      const isPreview = !hasAccess && !isAdmin(user);
+      const readingsList = isPreview ? getPreviewResponse(result.readingsList, 200) : result.readingsList;
+
+      // Save to database
+      const savedReadings = await storage.createSuggestedReadings({
+        sourceText,
+        readingsList: result.readingsList, // Always save full content
+        model,
+        chunkIndex: chunkIndex ?? null
+      });
+
+      console.log("Generated suggested readings:", {
+        readingsList: readingsList.substring(0, 100) + "...",
+      });
+
+      res.json({
+        suggestedReadings: {
+          id: savedReadings.id,
+          readingsList: readingsList, // Return preview or full based on user status
+          timestamp: savedReadings.timestamp
+        },
+        isPreview 
+      });
+    } catch (error) {
+      console.error("Suggested readings generation error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate suggested readings" });
+    }
+  });
 
   // Podcast generation endpoint
   app.post("/api/generate-podcast", async (req, res) => {

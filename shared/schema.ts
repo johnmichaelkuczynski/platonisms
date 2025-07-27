@@ -136,6 +136,15 @@ export const cognitiveMaps = pgTable("cognitive_maps", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+export const suggestedReadings = pgTable("suggested_readings", {
+  id: serial("id").primaryKey(),
+  sourceText: text("source_text").notNull(),
+  readingsList: text("readings_list").notNull(),
+  model: text("model").notNull(),
+  chunkIndex: integer("chunk_index"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 
 
 
@@ -250,6 +259,13 @@ export const insertThesisDeepDiveSchema = createInsertSchema(thesisDeepDive).pic
   chunkIndex: true,
 });
 
+export const insertSuggestedReadingsSchema = createInsertSchema(suggestedReadings).pick({
+  sourceText: true,
+  readingsList: true,
+  model: true,
+  chunkIndex: true,
+});
+
 
 
 
@@ -283,6 +299,8 @@ export type SummaryWithThesis = typeof summaryWithThesis.$inferSelect;
 export type InsertSummaryWithThesis = z.infer<typeof insertSummaryWithThesisSchema>;
 export type ThesisDeepDive = typeof thesisDeepDive.$inferSelect;
 export type InsertThesisDeepDive = z.infer<typeof insertThesisDeepDiveSchema>;
+export type SuggestedReadings = typeof suggestedReadings.$inferSelect;
+export type InsertSuggestedReadings = z.infer<typeof insertSuggestedReadingsSchema>;
 
 // Request schemas for API
 export const generateCognitiveMapRequestSchema = z.object({

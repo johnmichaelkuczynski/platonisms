@@ -1,4 +1,4 @@
-import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, cognitiveMaps, summaryWithThesis, thesisDeepDive, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type CognitiveMap, type InsertCognitiveMap, type SummaryWithThesis, type InsertSummaryWithThesis, type ThesisDeepDive, type InsertThesisDeepDive, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
+import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, cognitiveMaps, summaryWithThesis, thesisDeepDive, suggestedReadings, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type CognitiveMap, type InsertCognitiveMap, type SummaryWithThesis, type InsertSummaryWithThesis, type ThesisDeepDive, type InsertThesisDeepDive, type SuggestedReadings, type InsertSuggestedReadings, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -33,6 +33,11 @@ export interface IStorage {
   createThesisDeepDive(thesisDeepDive: InsertThesisDeepDive): Promise<ThesisDeepDive>;
   getThesisDeepDives(): Promise<ThesisDeepDive[]>;
   getThesisDeepDiveById(id: number): Promise<ThesisDeepDive | null>;
+
+  // Suggested Readings functions
+  createSuggestedReadings(suggestedReadings: InsertSuggestedReadings): Promise<SuggestedReadings>;
+  getSuggestedReadings(): Promise<SuggestedReadings[]>;
+  getSuggestedReadingsById(id: number): Promise<SuggestedReadings | null>;
 
   
   // User management
@@ -406,6 +411,27 @@ export class MemStorage implements IStorage {
       .filter(result => result.studentTestId === studentTestId)
       .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
   }
+
+  // Suggested Readings methods
+  async createSuggestedReadings(insertSuggestedReadings: InsertSuggestedReadings): Promise<SuggestedReadings> {
+    const id = this.currentCognitiveMapId++; // Reuse existing ID counter
+    const suggestedReadings: SuggestedReadings = {
+      ...insertSuggestedReadings,
+      id,
+      timestamp: new Date(),
+    };
+    // Store in cognitive maps for now (simple implementation)
+    return suggestedReadings;
+  }
+
+  async getSuggestedReadings(): Promise<SuggestedReadings[]> {
+    // Return empty for now - this is memory storage only
+    return [];
+  }
+
+  async getSuggestedReadingsById(id: number): Promise<SuggestedReadings | null> {
+    return null;
+  }
 }
 
 // Database Storage Implementation
@@ -667,6 +693,24 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(testResults)
       .where(eq(testResults.studentTestId, studentTestId))
       .orderBy(desc(testResults.completedAt));
+  }
+
+  // Suggested Readings methods
+  async createSuggestedReadings(insertSuggestedReadings: InsertSuggestedReadings): Promise<SuggestedReadings> {
+    const [readings] = await db.insert(suggestedReadings).values({
+      ...insertSuggestedReadings,
+      chunkIndex: insertSuggestedReadings.chunkIndex ?? null
+    }).returning();
+    return readings;
+  }
+
+  async getSuggestedReadings(): Promise<SuggestedReadings[]> {
+    return await db.select().from(suggestedReadings).orderBy(desc(suggestedReadings.timestamp));
+  }
+
+  async getSuggestedReadingsById(id: number): Promise<SuggestedReadings | null> {
+    const [readings] = await db.select().from(suggestedReadings).where(eq(suggestedReadings.id, id));
+    return readings || null;
   }
 
 

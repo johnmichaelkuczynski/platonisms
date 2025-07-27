@@ -20,6 +20,7 @@ interface DocumentContentProps {
   onCreateCognitiveMap?: (text: string) => void;
   onSummaryWithThesis?: (text: string) => void;
   onThesisDeepDive?: (text: string) => void;
+  onSuggestedReadings?: (text: string) => void;
 }
 
 export default function DocumentContent({ 
@@ -32,7 +33,8 @@ export default function DocumentContent({
   onGeneratePodcast,
   onCreateCognitiveMap,
   onSummaryWithThesis,
-  onThesisDeepDive
+  onThesisDeepDive,
+  onSuggestedReadings
 }: DocumentContentProps) {
   const { selection, isSelecting, clearSelection, highlightSelection, removeHighlights } = useTextSelection();
   const [showChunkingModal, setShowChunkingModal] = useState(false);
@@ -329,6 +331,7 @@ export default function DocumentContent({
           onCreateCognitiveMap={handleCreateCognitiveMap}
           onSummaryWithThesis={onSummaryWithThesis || (() => {})}
           onThesisDeepDive={onThesisDeepDive || (() => {})}
+          onSuggestedReadings={onSuggestedReadings || (() => {})}
           onHighlight={handleHighlight}
           onClear={clearSelection}
         />

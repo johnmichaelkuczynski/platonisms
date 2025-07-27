@@ -13,6 +13,7 @@ interface SelectionToolbarProps {
   onCreateCognitiveMap: (text: string) => void;
   onSummaryWithThesis: (text: string) => void;
   onThesisDeepDive: (text: string) => void;
+  onSuggestedReadings: (text: string) => void;
 
   onHighlight: () => void;
   onClear: () => void;
@@ -30,6 +31,7 @@ export default function SelectionToolbar({
   onCreateCognitiveMap,
   onSummaryWithThesis,
   onThesisDeepDive,
+  onSuggestedReadings,
   onHighlight, 
   onClear, 
   position 
@@ -80,6 +82,11 @@ export default function SelectionToolbar({
 
   const handleThesisDeepDive = () => {
     onThesisDeepDive(selectedText);
+    // Keep toolbar visible so user can try other actions
+  };
+
+  const handleSuggestedReadings = () => {
+    onSuggestedReadings(selectedText);
     // Keep toolbar visible so user can try other actions
   };
 
@@ -202,6 +209,16 @@ export default function SelectionToolbar({
       >
         <Brain className="w-3 h-3" />
         <span className="text-xs">Thesis Deep-Dive</span>
+      </Button>
+
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleSuggestedReadings}
+        className="flex items-center space-x-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+      >
+        <BookOpen className="w-3 h-3" />
+        <span className="text-xs">Suggested Readings</span>
       </Button>
 
       <Button

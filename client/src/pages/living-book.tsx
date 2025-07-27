@@ -16,6 +16,7 @@ import PodcastModal from "@/components/podcast-modal";
 import CognitiveMapModal from "@/components/cognitive-map-modal";
 import SummaryWithThesisModal from "@/components/summary-with-thesis-modal";
 import ThesisDeepDiveModal from "@/components/thesis-deep-dive-modal";
+import SuggestedReadingsModal from "@/components/suggested-readings-modal";
 
 
 import ChunkingModal from "@/components/chunking-modal";
@@ -57,6 +58,8 @@ export default function LivingBook() {
   const [selectedTextForSummaryWithThesis, setSelectedTextForSummaryWithThesis] = useState<string>("");
   const [thesisDeepDiveModalOpen, setThesisDeepDiveModalOpen] = useState(false);
   const [selectedTextForThesisDeepDive, setSelectedTextForThesisDeepDive] = useState<string>("");
+  const [suggestedReadingsModalOpen, setSuggestedReadingsModalOpen] = useState(false);
+  const [selectedTextForSuggestedReadings, setSelectedTextForSuggestedReadings] = useState<string>("");
 
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
@@ -218,6 +221,18 @@ export default function LivingBook() {
     } else {
       setSelectedTextForThesisDeepDive(text);
       setThesisDeepDiveModalOpen(true);
+    }
+  };
+
+  const handleCreateSuggestedReadingsFromSelection = (text: string) => {
+    const wordCount = text.split(/\s+/).length;
+    
+    if (wordCount > 1000) {
+      setPendingChunkText(text);
+      setChunkingModalOpen(true);
+    } else {
+      setSelectedTextForSuggestedReadings(text);
+      setSuggestedReadingsModalOpen(true);
     }
   };
 
@@ -394,6 +409,7 @@ export default function LivingBook() {
             onCreateCognitiveMap={handleCreateCognitiveMapFromSelection}
             onSummaryWithThesis={handleCreateSummaryWithThesisFromSelection}
             onThesisDeepDive={handleCreateThesisDeepDiveFromSelection}
+            onSuggestedReadings={handleCreateSuggestedReadingsFromSelection}
           />
         </main>
 
@@ -487,6 +503,14 @@ export default function LivingBook() {
         isOpen={thesisDeepDiveModalOpen}
         onClose={() => setThesisDeepDiveModalOpen(false)}
         sourceText={selectedTextForThesisDeepDive}
+        selectedModel={selectedModel}
+      />
+
+      {/* Suggested Readings Modal */}
+      <SuggestedReadingsModal
+        isOpen={suggestedReadingsModalOpen}
+        onClose={() => setSuggestedReadingsModalOpen(false)}
+        sourceText={selectedTextForSuggestedReadings}
         selectedModel={selectedModel}
       />
 
