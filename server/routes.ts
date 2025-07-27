@@ -1390,7 +1390,8 @@ FEEDBACK: [explanation focusing on content accuracy]`;
   // Generate Suggested Readings endpoint
   app.post("/api/generate-suggested-readings", async (req, res) => {
     try {
-      const { sourceText, model, chunkIndex } = insertSuggestedReadingsSchema.parse(req.body);
+      console.log("Suggested readings request body:", req.body);
+      const { sourceText, model, chunkIndex, instructions } = req.body;
       
       const user = await getCurrentUser(req);
       if (!user) {
@@ -1404,6 +1405,7 @@ FEEDBACK: [explanation focusing on content accuracy]`;
       const result = await generateSuggestedReadings({
         sourceText,
         model,
+        instructions: instructions || "",
         chunkIndex
       });
 

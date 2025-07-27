@@ -4,6 +4,7 @@ import type { AIModel } from '@shared/schema';
 interface SuggestedReadingsRequest {
   sourceText: string;
   model: AIModel;
+  instructions?: string;
   chunkIndex?: number;
 }
 
@@ -12,7 +13,7 @@ interface SuggestedReadingsResponse {
 }
 
 export async function generateSuggestedReadings(request: SuggestedReadingsRequest): Promise<SuggestedReadingsResponse> {
-  const { sourceText, model } = request;
+  const { sourceText, model, instructions } = request;
 
   const systemPrompt = `You are an expert academic researcher and bibliographer. Based on the ideas, themes, and subject matter in the provided text passage, generate a list of relevant academic or intellectual works (books, articles, or essays). Include both historical and contemporary sources that would be valuable for someone studying these topics.
 
@@ -31,6 +32,8 @@ Ensure recommendations span different time periods and perspectives when appropr
   const userPrompt = `Based on this passage, recommend relevant academic works:
 
 ${sourceText}
+
+${instructions ? `Special instructions: ${instructions}` : ''}
 
 Please provide 5-10 scholarly recommendations that would help someone understand the ideas, themes, and subject matter in this text.`;
 
