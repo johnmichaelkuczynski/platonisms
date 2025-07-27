@@ -39,7 +39,9 @@ export default function CognitiveMapModal({
         body: JSON.stringify(data),
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
+      console.log("Cognitive map response:", response);
+      console.log("Cognitive map data:", response.cognitiveMap);
       setCurrentMap(response.cognitiveMap);
       setShowDiagram(true);
       toast({
@@ -65,7 +67,7 @@ export default function CognitiveMapModal({
       sourceText: sourceText,
       instructions: finalInstructions,
       model: selectedModel,
-      chunkIndex,
+      chunkIndex: chunkIndex ?? undefined,
     });
   };
 
