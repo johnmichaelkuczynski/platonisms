@@ -16,7 +16,6 @@ import PodcastModal from "@/components/podcast-modal";
 import CognitiveMapModal from "@/components/cognitive-map-modal";
 import SummaryWithThesisModal from "@/components/summary-with-thesis-modal";
 import ThesisDeepDiveModal from "@/components/thesis-deep-dive-modal";
-import SuggestedReadingsModal from "@/components/suggested-readings-modal";
 
 
 import ChunkingModal from "@/components/chunking-modal";
@@ -27,10 +26,12 @@ import PaymentModal from "@/components/payment-modal";
 import { initializeMathRenderer } from "@/lib/math-renderer";
 import { bookContent, getFullDocumentContent } from "@shared/book-content";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import type { AIModel } from "@shared/schema";
 
 export default function LivingBook() {
   const { user, logout, isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const [selectedModel, setSelectedModel] = useState<AIModel>("openai");
   const [mathMode, setMathMode] = useState<boolean>(true);
 
@@ -58,8 +59,7 @@ export default function LivingBook() {
   const [selectedTextForSummaryWithThesis, setSelectedTextForSummaryWithThesis] = useState<string>("");
   const [thesisDeepDiveModalOpen, setThesisDeepDiveModalOpen] = useState(false);
   const [selectedTextForThesisDeepDive, setSelectedTextForThesisDeepDive] = useState<string>("");
-  const [suggestedReadingsModalOpen, setSuggestedReadingsModalOpen] = useState(false);
-  const [selectedTextForSuggestedReadings, setSelectedTextForSuggestedReadings] = useState<string>("");
+
 
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
@@ -224,15 +224,40 @@ export default function LivingBook() {
     }
   };
 
-  const handleCreateSuggestedReadingsFromSelection = (text: string) => {
-    const wordCount = text.split(/\s+/).length;
-    
-    if (wordCount > 1000) {
-      setPendingChunkText(text);
-      setChunkingModalOpen(true);
-    } else {
-      setSelectedTextForSuggestedReadings(text);
-      setSuggestedReadingsModalOpen(true);
+  const handleCreateSuggestedReadingsFromSelection = async (text: string) => {
+    try {
+      const response = await fetch('/api/generate-suggested-readings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          sourceText: text,
+          model: selectedModel,
+          instructions: "",
+          chunkIndex: null
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to generate suggested readings');
+      }
+
+      const data = await response.json();
+      
+      // Add to chat interface
+      setSelectedTextForChat(`**Suggested Readings for Selected Text:**\n\n${data.suggestedReadings.readingsList}`);
+
+      toast({
+        title: "Suggested Readings Generated",
+        description: "Academic recommendations added to chat.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -506,13 +531,7 @@ export default function LivingBook() {
         selectedModel={selectedModel}
       />
 
-      {/* Suggested Readings Modal */}
-      <SuggestedReadingsModal
-        isOpen={suggestedReadingsModalOpen}
-        onClose={() => setSuggestedReadingsModalOpen(false)}
-        sourceText={selectedTextForSuggestedReadings}
-        selectedModel={selectedModel}
-      />
+
 
 
 

@@ -793,9 +793,10 @@ Preferred communication style: Simple, everyday language.
 - July 27, 2025: SUGGESTED READINGS FUNCTION COMPLETE IMPLEMENTATION - Third foundational function fully operational
   - BUILT complete suggested readings generation system mirroring thesis analysis architecture
   - Backend: Created suggested readings storage schema, API routes, and AI generation service with fallback support
-  - Frontend: Implemented SuggestedReadingsModal with custom instructions and in-app viewing capabilities
+  - Frontend: SIMPLIFIED workflow - removed modal interface for instant generation
   - Integration: Added "Suggested Readings" button to text selection toolbar alongside other foundational functions
   - AI connectivity: All LLM models (OpenAI, Anthropic, DeepSeek, Perplexity) connected with OpenAI fallback
   - Output format: Generates 5-10 academic works with (a) Full title, (b) Author, (c) One-sentence relevance explanation
-  - Complete end-to-end workflow fully operational: select text → generate readings → view/download recommendations
+  - INSTANT workflow: select text → click button → immediate generation using current AI model → results in chat
   - All three foundational functions now complete: Summary/Thesis, Thesis Deep-Dive, and Suggested Readings
+  - WORKFLOW SIMPLIFIED: No modal, no custom instructions, no extra steps - just instant academic recommendations
