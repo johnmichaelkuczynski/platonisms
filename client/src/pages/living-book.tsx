@@ -244,13 +244,20 @@ export default function LivingBook() {
       }
 
       const data = await response.json();
-      console.log('Suggested readings response:', data);
       
-      // Add to chat interface - ensure we get the actual content
+      // Get the readings content
       const readingsContent = data.suggestedReadings?.readingsList || data.readingsList || JSON.stringify(data);
-      console.log('Readings content to display:', readingsContent);
       
-      setSelectedTextForChat(`**Suggested Readings for Selected Text:**\n\n${readingsContent}`);
+      // Add message directly to chat by sending it as a chat message
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          message: `Suggested Readings for Selected Text:\n\n${readingsContent}`,
+          model: selectedModel
+        })
+      });
 
       toast({
         title: "Suggested Readings Generated",
