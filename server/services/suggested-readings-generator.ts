@@ -22,10 +22,12 @@ For each recommended work, provide:
 (b) Author
 (c) One-sentence explanation of relevance to the passage
 
-Return a bulleted list with 5-10 entries. Focus on high-quality, influential works that directly relate to the themes and concepts in the passage.
+CRITICAL FORMATTING: Return ONLY a clean bulleted list with 5-10 entries. Each entry must be on its own line starting with a bullet point.
 
-Format each entry as:
+Format each entry EXACTLY as:
 • "Title" by Author - Brief explanation of relevance.
+
+Do NOT include any introductory text, explanations, or additional paragraphs. Start immediately with the first bullet point and end with the last bullet point.
 
 Ensure recommendations span different time periods and perspectives when appropriate.`;
 
@@ -35,7 +37,7 @@ ${sourceText}
 
 ${instructions ? `Special instructions: ${instructions}` : ''}
 
-Please provide 5-10 scholarly recommendations that would help someone understand the ideas, themes, and subject matter in this text.`;
+Provide 5-10 scholarly recommendations in a clean bulleted list format. Start immediately with the first bullet point - no introductory text or explanations.`;
 
   try {
     const response = await generateAIResponse(model, systemPrompt, userPrompt, false);
