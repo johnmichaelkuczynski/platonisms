@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -26,11 +26,15 @@ export default function CognitiveMapModal({
   chunkIndex,
   selectedModel: defaultModel = "openai"
 }: CognitiveMapModalProps) {
-  const [instructions, setInstructions] = useState("");
-  const [selectedModel, setSelectedModel] = useState<AIModel>(defaultModel);
   const [currentMap, setCurrentMap] = useState<CognitiveMap | null>(null);
-  const [showDiagram, setShowDiagram] = useState(false);
   const { toast } = useToast();
+
+  // Auto-generate on open
+  React.useEffect(() => {
+    if (isOpen && sourceText && !currentMap) {
+      handleGenerate();
+    }
+  }, [isOpen, sourceText, currentMap]);
 
   const generateMapMutation = useMutation({
     mutationFn: async (data: { sourceText: string; instructions: string; model: AIModel; chunkIndex?: number }) => {
@@ -42,31 +46,37 @@ export default function CognitiveMapModal({
     onSuccess: (response: any) => {
       console.log("Cognitive map response:", response);
       console.log("Cognitive map data:", response.cognitiveMap);
-      setCurrentMap(response.cognitiveMap);
-      setShowDiagram(true);
-      toast({
-        title: "Cognitive Map Generated",
-        description: "Your cognitive map has been created successfully!",
-      });
+      if (response.cognitiveMap && response.cognitiveMap.mapContent) {
+        setCurrentMap(response.cognitiveMap);
+        toast({
+          title: "Cognitive Map Generated",
+          description: "Your cognitive map has been created successfully!",
+        });
+      } else {
+        toast({
+          title: "Generation Issue",
+          description: "The cognitive map was generated but appears to be empty. Please try again.",
+          variant: "destructive"
+        });
+      }
     },
     onError: (error: any) => {
-      console.error("Error generating cognitive map:", error);
+      console.error("Cognitive map generation failed:", error);
       toast({
-        title: "Error",
+        title: "Generation Failed",
         description: "Failed to generate cognitive map. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     },
   });
 
   const handleGenerate = () => {
-    const finalInstructions = instructions.trim() || 
-      "Read the selected text and output a concept map of the main thesis, logical dependencies, key definitions, and conceptual relationships. Structure the output as a hierarchy or dependency tree in text form (e.g., Thesis → Sub-claims → Premises → Definitions).";
+    const defaultInstructions = "Read the selected text and output a concept map of the main thesis, logical dependencies, key definitions, and conceptual relationships. Structure the output as a hierarchy or dependency tree in text form (e.g., Thesis → Sub-claims → Premises → Definitions).";
     
     generateMapMutation.mutate({
       sourceText: sourceText,
-      instructions: finalInstructions,
-      model: selectedModel,
+      instructions: defaultInstructions,
+      model: defaultModel,
       chunkIndex: chunkIndex ?? undefined,
     });
   };
@@ -115,62 +125,13 @@ export default function CognitiveMapModal({
         </DialogHeader>
         
         <div className="space-y-4">
-          {!showDiagram ? (
-            <>
-              <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
-                <h4 className="font-medium text-sm mb-2">Selected Text Preview:</h4>
-                <ScrollArea className="h-20">
-                  <p className="text-sm text-muted-foreground">
-                    {sourceText ? sourceText.substring(0, 300) + "..." : "No text selected"}
-                  </p>
-                </ScrollArea>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Custom Instructions (Optional)
-                  </label>
-                  <Textarea
-                    placeholder="Enter specific instructions for the cognitive map, or leave blank for default analysis..."
-                    value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
-                    className="min-h-[100px]"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">AI Model</label>
-                  <Select value={selectedModel} onValueChange={(value: AIModel) => setSelectedModel(value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="openai">OpenAI GPT-4</SelectItem>
-                      <SelectItem value="anthropic">Claude 3</SelectItem>
-                      <SelectItem value="deepseek">DeepSeek</SelectItem>
-                      <SelectItem value="perplexity">Perplexity</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button 
-                  onClick={handleGenerate}
-                  disabled={generateMapMutation.isPending}
-                  className="w-full"
-                >
-                  {generateMapMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating Cognitive Map...
-                    </>
-                  ) : (
-                    "Generate Cognitive Map"
-                  )}
-                </Button>
-              </div>
-            </>
-          ) : (
+          {generateMapMutation.isPending ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 mb-4 animate-spin" />
+              <p className="text-lg font-medium">Generating Cognitive Map...</p>
+              <p className="text-sm text-muted-foreground">Analyzing selected text and creating concept map</p>
+            </div>
+          ) : currentMap ? (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">Cognitive Map Result</h3>
@@ -179,7 +140,10 @@ export default function CognitiveMapModal({
                     <Download className="w-4 h-4 mr-2" />
                     Download
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setShowDiagram(false)}>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setCurrentMap(null);
+                    handleGenerate();
+                  }}>
                     Generate New Map
                   </Button>
                 </div>
@@ -195,6 +159,14 @@ export default function CognitiveMapModal({
                 
                 {renderMermaidDiagram()}
               </ScrollArea>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12">
+              <p className="text-lg font-medium mb-2">No cognitive map generated</p>
+              <p className="text-sm text-muted-foreground mb-4">Please try again</p>
+              <Button onClick={handleGenerate}>
+                Try Again
+              </Button>
             </div>
           )}
         </div>

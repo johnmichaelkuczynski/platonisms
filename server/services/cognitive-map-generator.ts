@@ -131,6 +131,10 @@ Provide your response in the exact format specified: TEXT MAP first, then MERMAI
     C --> E[Key Relationships]`;
   }
 
+  console.log("Generated cognitive map content:", response);
+  console.log("Map content length:", response.length);
+  console.log("Final mapContent:", mapContent);
+
   return {
     mapContent: mapContent.trim(),
     mermaidDiagram: mermaidDiagram.trim()
