@@ -169,33 +169,17 @@ export default function DocumentContent({
         .map(paragraph => {
           if (!paragraph.trim()) return '';
           
-          // Check if this is a heading and add appropriate ID
-          if (paragraph.match(/^(Week \d+:|Introduction|Basic Concepts|Applications|Key Takeaways|Boolean|Truth Tables|Material vs|Strict Implication|Symbolic Logic|Part [IVX]+:|Midterm|Final|Examination)/i)) {
+          // Check if this is a numbered section heading
+          if (paragraph.match(/^[1-7]\.[0-9]+ /)) {
             let headingId = '';
             const text = paragraph.trim();
             
-            if (text.includes('Week 1:')) headingId = 'week1';
-            else if (text.includes('Week 2:')) headingId = 'week2';
-            else if (text.includes('Week 3:')) headingId = 'week3';
-            else if (text.includes('Week 4:')) headingId = 'week4';
-            else if (text.includes('Week 5:')) headingId = 'week5';
-            else if (text.includes('Week 6:')) headingId = 'week6';
-            else if (text.includes('Introduction to Logic')) headingId = 'intro-logic';
-            else if (text.includes('Basic Concepts')) headingId = 'basic-concepts';
-            else if (text.includes('Basic Logical Symbols')) headingId = 'logical-symbols';
-            else if (text.includes('Material vs')) headingId = 'material-strict';
-            else if (text.includes('Translation Practice')) headingId = 'translation-practice';
-            else if (text.includes('Practice Exercises')) headingId = 'practice-exercises';
-            else if (text.includes('Homework 1')) headingId = 'homework1';
-            else if (text.includes('Propositional Calculus')) headingId = 'propositional-calculus';
-            else if (text.includes('Truth Tables')) headingId = 'truth-tables';
-            else if (text.includes('Elementary Proofs')) headingId = 'elementary-proofs';
-            else if (text.includes('Boolean Algebra')) headingId = 'boolean-algebra';
-            else if (text.includes('Midterm Examination')) headingId = 'midterm';
-            else if (text.includes('Predicate Logic')) headingId = 'predicate-logic';
-            else if (text.includes('Advanced Quantification')) headingId = 'advanced-quantification';
-            else if (text.includes('Models and Proofs')) headingId = 'models-proofs';
-            else if (text.includes('Final Examination')) headingId = 'final-exam';
+            // Extract section number and create ID
+            const sectionMatch = text.match(/^([1-7]\.[0-9]+)/);
+            if (sectionMatch) {
+              const sectionNum = sectionMatch[1];
+              headingId = `section-${sectionNum.replace('.', '-')}`;
+            }
             
             return `<h2 id="${headingId}" class="text-xl font-semibold mb-4 mt-8 text-slate-900 dark:text-slate-100">${text}</h2>`;
           }
