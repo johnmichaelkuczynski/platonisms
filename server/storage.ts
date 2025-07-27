@@ -1,4 +1,4 @@
-import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, cognitiveMaps, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type CognitiveMap, type InsertCognitiveMap, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
+import { chatMessages, instructions, rewrites, quizzes, studyGuides, studentTests, cognitiveMaps, summaryWithThesis, thesisDeepDive, users, sessions, purchases, testResults, type ChatMessage, type InsertChatMessage, type Instruction, type InsertInstruction, type Rewrite, type InsertRewrite, type Quiz, type InsertQuiz, type StudyGuide, type InsertStudyGuide, type StudentTest, type InsertStudentTest, type CognitiveMap, type InsertCognitiveMap, type SummaryWithThesis, type InsertSummaryWithThesis, type ThesisDeepDive, type InsertThesisDeepDive, type User, type InsertUser, type Session, type InsertSession, type Purchase, type InsertPurchase, type TestResult, type InsertTestResult } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -23,6 +23,16 @@ export interface IStorage {
   createCognitiveMap(cognitiveMap: InsertCognitiveMap): Promise<CognitiveMap>;
   getCognitiveMaps(): Promise<CognitiveMap[]>;
   getCognitiveMapById(id: number): Promise<CognitiveMap | null>;
+  
+  // Summary with Thesis functions
+  createSummaryWithThesis(summaryWithThesis: InsertSummaryWithThesis): Promise<SummaryWithThesis>;
+  getSummariesWithThesis(): Promise<SummaryWithThesis[]>;
+  getSummaryWithThesisById(id: number): Promise<SummaryWithThesis | null>;
+  
+  // Thesis Deep-Dive functions
+  createThesisDeepDive(thesisDeepDive: InsertThesisDeepDive): Promise<ThesisDeepDive>;
+  getThesisDeepDives(): Promise<ThesisDeepDive[]>;
+  getThesisDeepDiveById(id: number): Promise<ThesisDeepDive | null>;
 
   
   // User management
@@ -512,6 +522,43 @@ export class DatabaseStorage implements IStorage {
   async getCognitiveMapById(id: number): Promise<CognitiveMap | null> {
     const [cognitiveMap] = await db.select().from(cognitiveMaps).where(eq(cognitiveMaps.id, id));
     return cognitiveMap || null;
+  }
+
+  // Summary with Thesis functions
+  async createSummaryWithThesis(insertSummaryWithThesis: InsertSummaryWithThesis): Promise<SummaryWithThesis> {
+    const [summaryThesis] = await db.insert(summaryWithThesis).values({
+      ...insertSummaryWithThesis,
+      chunkIndex: insertSummaryWithThesis.chunkIndex ?? null
+    }).returning();
+    return summaryThesis;
+  }
+
+  async getSummariesWithThesis(): Promise<SummaryWithThesis[]> {
+    return await db.select().from(summaryWithThesis).orderBy(desc(summaryWithThesis.timestamp));
+  }
+
+  async getSummaryWithThesisById(id: number): Promise<SummaryWithThesis | null> {
+    const [summaryThesis] = await db.select().from(summaryWithThesis).where(eq(summaryWithThesis.id, id));
+    return summaryThesis || null;
+  }
+
+  // Thesis Deep-Dive functions
+  async createThesisDeepDive(insertThesisDeepDive: InsertThesisDeepDive): Promise<ThesisDeepDive> {
+    const [deepDive] = await db.insert(thesisDeepDive).values({
+      ...insertThesisDeepDive,
+      chunkIndex: insertThesisDeepDive.chunkIndex ?? null,
+      comparisonTarget: insertThesisDeepDive.comparisonTarget ?? null
+    }).returning();
+    return deepDive;
+  }
+
+  async getThesisDeepDives(): Promise<ThesisDeepDive[]> {
+    return await db.select().from(thesisDeepDive).orderBy(desc(thesisDeepDive.timestamp));
+  }
+
+  async getThesisDeepDiveById(id: number): Promise<ThesisDeepDive | null> {
+    const [deepDive] = await db.select().from(thesisDeepDive).where(eq(thesisDeepDive.id, id));
+    return deepDive || null;
   }
 
   // User management methods with admin support

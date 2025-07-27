@@ -61,6 +61,29 @@ export const studentTests = pgTable("student_tests", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+export const summaryWithThesis = pgTable("summary_with_thesis", {
+  id: serial("id").primaryKey(),
+  sourceText: text("source_text").notNull(),
+  thesis: text("thesis").notNull(),
+  summary: text("summary").notNull(),
+  model: text("model").notNull(),
+  chunkIndex: integer("chunk_index"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export const thesisDeepDive = pgTable("thesis_deep_dive", {
+  id: serial("id").primaryKey(),
+  sourceText: text("source_text").notNull(),
+  extractedThesis: text("extracted_thesis").notNull(),
+  originalWording: text("original_wording").notNull(),
+  modernApplications: text("modern_applications").notNull(),
+  crossComparison: text("cross_comparison").notNull(),
+  comparisonTarget: text("comparison_target"),
+  model: text("model").notNull(),
+  chunkIndex: integer("chunk_index"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 
 
 export const users = pgTable("users", {
@@ -208,6 +231,25 @@ export const insertCognitiveMapSchema = createInsertSchema(cognitiveMaps).pick({
   chunkIndex: z.number().nullable().optional(),
 });
 
+export const insertSummaryWithThesisSchema = createInsertSchema(summaryWithThesis).pick({
+  sourceText: true,
+  thesis: true,
+  summary: true,
+  model: true,
+  chunkIndex: true,
+});
+
+export const insertThesisDeepDiveSchema = createInsertSchema(thesisDeepDive).pick({
+  sourceText: true,
+  extractedThesis: true,
+  originalWording: true,
+  modernApplications: true,
+  crossComparison: true,
+  comparisonTarget: true,
+  model: true,
+  chunkIndex: true,
+});
+
 
 
 
@@ -237,6 +279,10 @@ export type TestResult = typeof testResults.$inferSelect;
 export type InsertTestResult = z.infer<typeof insertTestResultSchema>;
 export type CognitiveMap = typeof cognitiveMaps.$inferSelect;
 export type InsertCognitiveMap = z.infer<typeof insertCognitiveMapSchema>;
+export type SummaryWithThesis = typeof summaryWithThesis.$inferSelect;
+export type InsertSummaryWithThesis = z.infer<typeof insertSummaryWithThesisSchema>;
+export type ThesisDeepDive = typeof thesisDeepDive.$inferSelect;
+export type InsertThesisDeepDive = z.infer<typeof insertThesisDeepDiveSchema>;
 
 // Request schemas for API
 export const generateCognitiveMapRequestSchema = z.object({
@@ -302,6 +348,19 @@ export const submitTestRequestSchema = z.object({
   questionTypes: z.record(z.enum(["multiple_choice", "short_answer", "long_answer"])).optional(),
 });
 
+export const summaryWithThesisRequestSchema = z.object({
+  sourceText: z.string(),
+  model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
+  chunkIndex: z.number().optional(),
+});
+
+export const thesisDeepDiveRequestSchema = z.object({
+  sourceText: z.string(),
+  model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
+  chunkIndex: z.number().optional(),
+  comparisonTarget: z.string().optional(),
+});
+
 
 
 export const registerRequestSchema = z.object({
@@ -332,6 +391,8 @@ export type RewriteRequest = z.infer<typeof rewriteRequestSchema>;
 export type QuizRequest = z.infer<typeof quizRequestSchema>;
 export type StudyGuideRequest = z.infer<typeof studyGuideRequestSchema>;
 export type StudentTestRequest = z.infer<typeof studentTestRequestSchema>;
+export type SummaryWithThesisRequest = z.infer<typeof summaryWithThesisRequestSchema>;
+export type ThesisDeepDiveRequest = z.infer<typeof thesisDeepDiveRequestSchema>;
 
 export type RegisterRequest = z.infer<typeof registerRequestSchema>;
 export type LoginRequest = z.infer<typeof loginRequestSchema>;

@@ -6,6 +6,8 @@ import session from "express-session";
 import { storage } from "./storage";
 import { generateAIResponse, generateRewrite, generatePassageExplanation, generatePassageDiscussionResponse, generateQuiz, generateStudyGuide, generateStudentTest } from "./services/ai-models";
 import { generateCognitiveMap } from "./services/cognitive-map-generator";
+import { generateSummaryWithThesis } from "./services/summary-with-thesis-generator";
+import { generateThesisDeepDive } from "./services/thesis-deep-dive-generator";
 
 import { getFullDocumentContent } from "./services/document-processor";
 
@@ -13,7 +15,7 @@ import { generatePDF } from "./services/pdf-generator";
 import { transcribeAudio } from "./services/speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
-import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, generateCognitiveMapRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
+import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, generateCognitiveMapRequestSchema, summaryWithThesisRequestSchema, thesisDeepDiveRequestSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
 import { podcastRequestSchema } from "../shared/podcast-schema";
 import { generatePodcastScript } from "./services/podcast-generator";
 
@@ -721,6 +723,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching cognitive maps:", error);
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Summary with Thesis generation endpoint
+  app.post("/api/generate-summary-with-thesis", async (req, res) => {
+    try {
+      const { sourceText, model, chunkIndex } = summaryWithThesisRequestSchema.parse(req.body);
+      const user = await getCurrentUser(req);
+      
+      const { thesis, summary } = await generateSummaryWithThesis(sourceText, model);
+      
+      // Check if user has access to full features
+      let thesisContent = thesis;
+      let summaryContent = summary;
+      let isPreview = false;
+      
+      if (!canAccessFeature(user)) {
+        thesisContent = getPreviewResponse(thesis, !user);
+        summaryContent = getPreviewResponse(summary, !user);
+        isPreview = true;
+      } else {
+        // Deduct 1 credit for full response (skip for admin)
+        if (!isAdmin(user)) {
+          await storage.updateUserCredits(user!.id, user!.credits - 1);
+        }
+      }
+      
+      const savedSummaryWithThesis = await storage.createSummaryWithThesis({
+        sourceText,
+        thesis,
+        summary,
+        model,
+        chunkIndex: chunkIndex || null
+      });
+      
+      res.json({ 
+        summaryWithThesis: {
+          id: savedSummaryWithThesis.id,
+          thesis: thesisContent,
+          summary: summaryContent,
+          timestamp: savedSummaryWithThesis.timestamp
+        },
+        isPreview 
+      });
+    } catch (error) {
+      console.error("Summary with thesis generation error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate summary with thesis" });
+    }
+  });
+
+  // Thesis Deep-Dive generation endpoint
+  app.post("/api/generate-thesis-deep-dive", async (req, res) => {
+    try {
+      const { sourceText, model, chunkIndex, comparisonTarget } = thesisDeepDiveRequestSchema.parse(req.body);
+      const user = await getCurrentUser(req);
+      
+      const { extractedThesis, originalWording, modernApplications, crossComparison } = await generateThesisDeepDive(
+        sourceText, 
+        model, 
+        comparisonTarget
+      );
+      
+      // Check if user has access to full features
+      let extractedThesisContent = extractedThesis;
+      let originalWordingContent = originalWording;
+      let modernApplicationsContent = modernApplications;
+      let crossComparisonContent = crossComparison;
+      let isPreview = false;
+      
+      if (!canAccessFeature(user)) {
+        extractedThesisContent = getPreviewResponse(extractedThesis, !user);
+        originalWordingContent = getPreviewResponse(originalWording, !user);
+        modernApplicationsContent = getPreviewResponse(modernApplications, !user);
+        crossComparisonContent = getPreviewResponse(crossComparison, !user);
+        isPreview = true;
+      } else {
+        // Deduct 1 credit for full response (skip for admin)
+        if (!isAdmin(user)) {
+          await storage.updateUserCredits(user!.id, user!.credits - 1);
+        }
+      }
+      
+      const savedThesisDeepDive = await storage.createThesisDeepDive({
+        sourceText,
+        extractedThesis,
+        originalWording,
+        modernApplications,
+        crossComparison,
+        comparisonTarget: comparisonTarget || null,
+        model,
+        chunkIndex: chunkIndex || null
+      });
+      
+      res.json({ 
+        thesisDeepDive: {
+          id: savedThesisDeepDive.id,
+          extractedThesis: extractedThesisContent,
+          originalWording: originalWordingContent,
+          modernApplications: modernApplicationsContent,
+          crossComparison: crossComparisonContent,
+          comparisonTarget: comparisonTarget,
+          timestamp: savedThesisDeepDive.timestamp
+        },
+        isPreview 
+      });
+    } catch (error) {
+      console.error("Thesis deep-dive generation error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate thesis deep-dive" });
     }
   });
 

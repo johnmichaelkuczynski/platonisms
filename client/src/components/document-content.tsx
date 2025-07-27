@@ -18,6 +18,8 @@ interface DocumentContentProps {
   onTestMe?: (text: string) => void;
   onGeneratePodcast?: (text: string) => void;
   onCreateCognitiveMap?: (text: string) => void;
+  onSummaryWithThesis?: (text: string) => void;
+  onThesisDeepDive?: (text: string) => void;
 }
 
 export default function DocumentContent({ 
@@ -28,7 +30,9 @@ export default function DocumentContent({
   onCreateStudyGuide,
   onTestMe,
   onGeneratePodcast,
-  onCreateCognitiveMap
+  onCreateCognitiveMap,
+  onSummaryWithThesis,
+  onThesisDeepDive
 }: DocumentContentProps) {
   const { selection, isSelecting, clearSelection, highlightSelection, removeHighlights } = useTextSelection();
   const [showChunkingModal, setShowChunkingModal] = useState(false);
@@ -323,6 +327,8 @@ export default function DocumentContent({
           onTestMe={handleTestMe}
           onGeneratePodcast={handleGeneratePodcast}
           onCreateCognitiveMap={handleCreateCognitiveMap}
+          onSummaryWithThesis={onSummaryWithThesis || (() => {})}
+          onThesisDeepDive={onThesisDeepDive || (() => {})}
           onHighlight={handleHighlight}
           onClear={clearSelection}
         />

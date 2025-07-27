@@ -14,6 +14,8 @@ import StudyGuideModal from "@/components/study-guide-modal";
 import StudentTestModal from "@/components/student-test-modal";
 import PodcastModal from "@/components/podcast-modal";
 import CognitiveMapModal from "@/components/cognitive-map-modal";
+import SummaryWithThesisModal from "@/components/summary-with-thesis-modal";
+import ThesisDeepDiveModal from "@/components/thesis-deep-dive-modal";
 
 
 import ChunkingModal from "@/components/chunking-modal";
@@ -51,6 +53,10 @@ export default function LivingBook() {
   const [cognitiveMapModalOpen, setCognitiveMapModalOpen] = useState(false);
   const [selectedTextForCognitiveMap, setSelectedTextForCognitiveMap] = useState<string>("");
   const [cognitiveMapChunkIndex, setCognitiveMapChunkIndex] = useState<number | null>(null);
+  const [summaryWithThesisModalOpen, setSummaryWithThesisModalOpen] = useState(false);
+  const [selectedTextForSummaryWithThesis, setSelectedTextForSummaryWithThesis] = useState<string>("");
+  const [thesisDeepDiveModalOpen, setThesisDeepDiveModalOpen] = useState(false);
+  const [selectedTextForThesisDeepDive, setSelectedTextForThesisDeepDive] = useState<string>("");
 
 
   const [chunkingModalOpen, setChunkingModalOpen] = useState(false);
@@ -188,6 +194,30 @@ export default function LivingBook() {
       setSelectedTextForCognitiveMap(text);
       setCognitiveMapChunkIndex(null);
       setCognitiveMapModalOpen(true);
+    }
+  };
+
+  const handleCreateSummaryWithThesisFromSelection = (text: string) => {
+    const wordCount = text.split(/\s+/).length;
+    
+    if (wordCount > 1000) {
+      setPendingChunkText(text);
+      setChunkingModalOpen(true);
+    } else {
+      setSelectedTextForSummaryWithThesis(text);
+      setSummaryWithThesisModalOpen(true);
+    }
+  };
+
+  const handleCreateThesisDeepDiveFromSelection = (text: string) => {
+    const wordCount = text.split(/\s+/).length;
+    
+    if (wordCount > 1000) {
+      setPendingChunkText(text);
+      setChunkingModalOpen(true);
+    } else {
+      setSelectedTextForThesisDeepDive(text);
+      setThesisDeepDiveModalOpen(true);
     }
   };
 
@@ -362,6 +392,8 @@ export default function LivingBook() {
             onTestMe={handleTestMeFromSelection}
             onGeneratePodcast={handleGeneratePodcastFromSelection}
             onCreateCognitiveMap={handleCreateCognitiveMapFromSelection}
+            onSummaryWithThesis={handleCreateSummaryWithThesisFromSelection}
+            onThesisDeepDive={handleCreateThesisDeepDiveFromSelection}
           />
         </main>
 
@@ -439,6 +471,22 @@ export default function LivingBook() {
         onClose={handleCognitiveMapModalClose}
         sourceText={selectedTextForCognitiveMap}
         chunkIndex={cognitiveMapChunkIndex}
+        selectedModel={selectedModel}
+      />
+
+      {/* Summary with Thesis Modal */}
+      <SummaryWithThesisModal
+        isOpen={summaryWithThesisModalOpen}
+        onClose={() => setSummaryWithThesisModalOpen(false)}
+        sourceText={selectedTextForSummaryWithThesis}
+        selectedModel={selectedModel}
+      />
+
+      {/* Thesis Deep-Dive Modal */}
+      <ThesisDeepDiveModal
+        isOpen={thesisDeepDiveModalOpen}
+        onClose={() => setThesisDeepDiveModalOpen(false)}
+        sourceText={selectedTextForThesisDeepDive}
         selectedModel={selectedModel}
       />
 

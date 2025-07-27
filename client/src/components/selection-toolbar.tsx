@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Highlighter, X, MessageSquare, Edit3, FileText, BookOpen, GraduationCap, Volume2, GitBranch } from "lucide-react";
+import { MessageCircle, Highlighter, X, MessageSquare, Edit3, FileText, BookOpen, GraduationCap, Volume2, GitBranch, Target, Brain } from "lucide-react";
 import { useState } from "react";
 
 interface SelectionToolbarProps {
@@ -11,6 +11,8 @@ interface SelectionToolbarProps {
   onTestMe: (text: string) => void;
   onGeneratePodcast: (text: string) => void;
   onCreateCognitiveMap: (text: string) => void;
+  onSummaryWithThesis: (text: string) => void;
+  onThesisDeepDive: (text: string) => void;
 
   onHighlight: () => void;
   onClear: () => void;
@@ -26,6 +28,8 @@ export default function SelectionToolbar({
   onTestMe,
   onGeneratePodcast,
   onCreateCognitiveMap,
+  onSummaryWithThesis,
+  onThesisDeepDive,
   onHighlight, 
   onClear, 
   position 
@@ -49,8 +53,6 @@ export default function SelectionToolbar({
     // Keep toolbar visible so user can try other actions
   };
 
-
-
   const handleCreateStudyGuide = () => {
     onCreateStudyGuide(selectedText);
     // Keep toolbar visible so user can try other actions
@@ -71,13 +73,15 @@ export default function SelectionToolbar({
     // Keep toolbar visible so user can try other actions
   };
 
+  const handleSummaryWithThesis = () => {
+    onSummaryWithThesis(selectedText);
+    // Keep toolbar visible so user can try other actions
+  };
 
-
-
-
-
-
-
+  const handleThesisDeepDive = () => {
+    onThesisDeepDive(selectedText);
+    // Keep toolbar visible so user can try other actions
+  };
 
   const handleHighlight = () => {
     onHighlight();
@@ -139,8 +143,6 @@ export default function SelectionToolbar({
         <Edit3 className="w-3 h-3" />
         <span className="text-xs">Rewrite</span>
       </Button>
-
-
       
       <Button
         size="sm"
@@ -182,7 +184,26 @@ export default function SelectionToolbar({
         <span className="text-xs">Cognitive Map</span>
       </Button>
 
-      
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleSummaryWithThesis}
+        className="flex items-center space-x-1 text-amber-600 border-amber-200 hover:bg-amber-50"
+      >
+        <Target className="w-3 h-3" />
+        <span className="text-xs">Summary+Thesis</span>
+      </Button>
+
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleThesisDeepDive}
+        className="flex items-center space-x-1 text-rose-600 border-rose-200 hover:bg-rose-50"
+      >
+        <Brain className="w-3 h-3" />
+        <span className="text-xs">Thesis Deep-Dive</span>
+      </Button>
+
       <Button
         size="sm"
         variant="outline"
@@ -192,14 +213,15 @@ export default function SelectionToolbar({
         <Highlighter className="w-3 h-3" />
         <span className="text-xs">Highlight</span>
       </Button>
-      
+
       <Button
         size="sm"
-        variant="ghost"
+        variant="outline"
         onClick={handleClear}
-        className="text-gray-500 hover:text-gray-700"
+        className="flex items-center space-x-1 text-red-600 border-red-200 hover:bg-red-50"
       >
         <X className="w-3 h-3" />
+        <span className="text-xs">X</span>
       </Button>
     </div>
   );
