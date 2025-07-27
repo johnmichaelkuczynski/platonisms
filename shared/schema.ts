@@ -105,7 +105,7 @@ export const testResults = pgTable("test_results", {
 export const cognitiveMaps = pgTable("cognitive_maps", {
   id: serial("id").primaryKey(),
   sourceText: text("source_text").notNull(),
-  instructions: text("instructions").notNull(),
+  instructions: text("instructions"),
   mapContent: text("map_content").notNull(),
   mermaidDiagram: text("mermaid_diagram").notNull(),
   model: text("model").notNull(),
@@ -203,6 +203,9 @@ export const insertCognitiveMapSchema = createInsertSchema(cognitiveMaps).pick({
   mermaidDiagram: true,
   model: true,
   chunkIndex: true,
+}).extend({
+  instructions: z.string().nullable(),
+  chunkIndex: z.number().nullable().optional(),
 });
 
 
@@ -240,7 +243,7 @@ export const generateCognitiveMapRequestSchema = z.object({
   sourceText: z.string(),
   instructions: z.string().optional(),
   model: z.enum(["deepseek", "openai", "anthropic", "perplexity"]),
-  chunkIndex: z.number().optional(),
+  chunkIndex: z.number().nullable().optional(),
 });
 
 export type GenerateCognitiveMapRequest = z.infer<typeof generateCognitiveMapRequestSchema>;
