@@ -802,3 +802,6 @@ Preferred communication style: Simple, everyday language.
   - WORKFLOW SIMPLIFIED: No modal, no custom instructions, no extra steps - just instant academic recommendations
   - VERIFIED WORKING: User confirmed function operates correctly with 9-14 second generation times and chat display
   - FORMATTING IMPROVED: Enhanced AI prompts to generate clean bulleted lists instead of paragraph format for better readability
+  - PROGRESS INDICATOR ADDED: Implemented loading state with spinning wheel and "Searching..." text during 7-14 second generation
+  - FRONTEND LOADING UX: Added Loader2 spinner icon, disabled button state, and toast notification during generation process
+  - BULLET POINT ENFORCEMENT: Enhanced backend formatting with regex conversion of numbered/dash lists to proper bullet points

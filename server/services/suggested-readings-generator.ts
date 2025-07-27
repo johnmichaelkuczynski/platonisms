@@ -37,7 +37,11 @@ ${sourceText}
 
 ${instructions ? `Special instructions: ${instructions}` : ''}
 
-Provide 5-10 scholarly recommendations in a clean bulleted list format. Start immediately with the first bullet point - no introductory text or explanations.`;
+Provide 5-10 scholarly recommendations in a clean bulleted list format. Start immediately with the first bullet point - no introductory text or explanations.
+
+EXAMPLE FORMAT:
+• "Title One" by Author Name - Brief relevance explanation.
+• "Title Two" by Author Name - Brief relevance explanation.`;
 
   try {
     const response = await generateAIResponse(model, systemPrompt, userPrompt, false);

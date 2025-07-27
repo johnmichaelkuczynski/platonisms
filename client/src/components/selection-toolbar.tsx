@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Highlighter, X, MessageSquare, Edit3, FileText, BookOpen, GraduationCap, Volume2, GitBranch, Target, Brain } from "lucide-react";
+import { MessageCircle, Highlighter, X, MessageSquare, Edit3, FileText, BookOpen, GraduationCap, Volume2, GitBranch, Target, Brain, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 interface SelectionToolbarProps {
@@ -14,7 +14,7 @@ interface SelectionToolbarProps {
   onSummaryWithThesis: (text: string) => void;
   onThesisDeepDive: (text: string) => void;
   onSuggestedReadings: (text: string) => void;
-
+  suggestedReadingsLoading?: boolean;
   onHighlight: () => void;
   onClear: () => void;
   position?: { x: number; y: number };
@@ -32,6 +32,7 @@ export default function SelectionToolbar({
   onSummaryWithThesis,
   onThesisDeepDive,
   onSuggestedReadings,
+  suggestedReadingsLoading = false,
   onHighlight, 
   onClear, 
   position 
@@ -215,10 +216,17 @@ export default function SelectionToolbar({
         size="sm"
         variant="outline"
         onClick={handleSuggestedReadings}
-        className="flex items-center space-x-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+        disabled={suggestedReadingsLoading}
+        className="flex items-center space-x-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50 disabled:opacity-60"
       >
-        <BookOpen className="w-3 h-3" />
-        <span className="text-xs">Suggested Readings</span>
+        {suggestedReadingsLoading ? (
+          <Loader2 className="w-3 h-3 animate-spin" />
+        ) : (
+          <BookOpen className="w-3 h-3" />
+        )}
+        <span className="text-xs">
+          {suggestedReadingsLoading ? "Searching..." : "Suggested Readings"}
+        </span>
       </Button>
 
       <Button

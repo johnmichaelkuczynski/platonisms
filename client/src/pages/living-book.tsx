@@ -59,6 +59,7 @@ export default function LivingBook() {
   const [selectedTextForSummaryWithThesis, setSelectedTextForSummaryWithThesis] = useState<string>("");
   const [thesisDeepDiveModalOpen, setThesisDeepDiveModalOpen] = useState(false);
   const [selectedTextForThesisDeepDive, setSelectedTextForThesisDeepDive] = useState<string>("");
+  const [suggestedReadingsLoading, setSuggestedReadingsLoading] = useState(false);
 
 
 
@@ -225,7 +226,13 @@ export default function LivingBook() {
   };
 
   const handleCreateSuggestedReadingsFromSelection = async (text: string) => {
+    setSuggestedReadingsLoading(true);
     try {
+      toast({
+        title: "Generating Suggested Readings",
+        description: "Searching for relevant academic works...",
+      });
+
       const response = await fetch('/api/generate-suggested-readings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -245,8 +252,17 @@ export default function LivingBook() {
 
       const data = await response.json();
       
-      // Get the readings content
-      const readingsContent = data.suggestedReadings?.readingsList || data.readingsList || JSON.stringify(data);
+      // Get the readings content and format with proper bullet points
+      let readingsContent = data.suggestedReadings?.readingsList || data.readingsList || JSON.stringify(data);
+      
+      // Ensure proper bullet point formatting
+      if (!readingsContent.includes('•')) {
+        // Convert numbered lists or dash lists to bullet points
+        readingsContent = readingsContent
+          .replace(/^\d+\.\s*/gm, '• ')
+          .replace(/^-\s*/gm, '• ')
+          .replace(/^\*\s*/gm, '• ');
+      }
       
       // Add message directly to chat by sending it as a chat message
       await fetch('/api/chat', {
@@ -269,6 +285,8 @@ export default function LivingBook() {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setSuggestedReadingsLoading(false);
     }
   };
 
@@ -446,6 +464,7 @@ export default function LivingBook() {
             onSummaryWithThesis={handleCreateSummaryWithThesisFromSelection}
             onThesisDeepDive={handleCreateThesisDeepDiveFromSelection}
             onSuggestedReadings={handleCreateSuggestedReadingsFromSelection}
+            suggestedReadingsLoading={suggestedReadingsLoading}
           />
         </main>
 
