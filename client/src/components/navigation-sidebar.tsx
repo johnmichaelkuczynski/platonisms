@@ -1,33 +1,15 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { bookContent as paperContent } from "@shared/book-content";
 
-// Create a table of contents based on the symbolic logic content
+// Create a table of contents based on the empiricism content
 const createTableOfContents = () => {
   const tableOfContents: Array<{ id: string; title: string; level: number }> = [
-    // Symbolic Logic Course Content
-    { id: "week-1", title: "Week 1: Basic Concepts, Notation, and Logical Operators", level: 0 },
-    { id: "introduction-to-logic", title: "Introduction to Logic", level: 1 },
-    { id: "basic-concepts", title: "Basic Concepts", level: 1 },
-    { id: "basic-logical-symbols", title: "Basic Logical Symbols", level: 1 },
-    { id: "material-vs-strict-implication", title: "Material vs. Strict Implication", level: 1 },
-    { id: "translation-practice", title: "Translation Practice", level: 1 },
-    
-    { id: "homework-1", title: "Homework 1: Basic Concepts and Notation", level: 0 },
-    
-    { id: "week-2", title: "Week 2: Truth Tables and Elementary Proofs", level: 0 },
-    { id: "propositional-calculus", title: "The Propositional Calculus", level: 1 },
-    { id: "truth-tables", title: "Truth Tables", level: 1 },
-    { id: "elementary-proofs", title: "Elementary Proofs", level: 1 },
-    { id: "de-morgans-laws", title: "De Morgan's Laws", level: 1 },
-    
-    { id: "homework-2", title: "Homework 2: Truth Tables and Elementary Proofs", level: 0 },
-    
-    { id: "week-3", title: "Week 3: Boolean Algebra", level: 0 },
-    { id: "boolean-algebra", title: "Introduction to Boolean Algebra", level: 1 },
-    { id: "basic-operations", title: "Basic Operations", level: 1 },
-    { id: "fundamental-laws", title: "Fundamental Laws of Boolean Algebra", level: 1 },
-    { id: "boolean-functions", title: "Boolean Functions and Truth Tables", level: 1 },
-    { id: "digital-logic", title: "Applications in Digital Logic", level: 1 }
+    // Use the actual section IDs and titles from the book content
+    ...paperContent.sections.map((section: any) => ({
+      id: section.id,
+      title: section.title,
+      level: 0
+    }))
   ];
   
   return tableOfContents;
