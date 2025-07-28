@@ -257,7 +257,7 @@ export default function LivingBook() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
     }
@@ -309,7 +309,7 @@ export default function LivingBook() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
     }
@@ -330,8 +330,7 @@ export default function LivingBook() {
         body: JSON.stringify({
           sourceText: text,
           model: selectedModel,
-          instructions: "",
-          chunkIndex: null
+          instructions: ""
         })
       });
 
@@ -372,7 +371,7 @@ export default function LivingBook() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
     } finally {

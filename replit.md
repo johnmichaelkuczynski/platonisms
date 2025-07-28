@@ -812,3 +812,11 @@ Preferred communication style: Simple, everyday language.
   - Added proper action handlers in document-content.tsx for all foundational functions
   - Users can now access all AI-powered features even when selecting large amounts of text (>1000 words)
   - Fixed TypeScript errors in chunking modal with explicit string array typing
+- July 28, 2025: CRITICAL API ENDPOINT AND VALIDATION FIXES - Summary+Thesis and Thesis Deep-Dive functionality restored
+  - FIXED API endpoint mismatch: frontend now calls correct backend routes (/api/generate-summary-with-thesis, /api/generate-thesis-deep-dive)
+  - RESOLVED schema validation error by removing null chunkIndex parameters from API requests
+  - FIXED TypeScript errors in error handlers with proper error instanceof Error checks
+  - Enhanced content parsing to display structured responses with thesis, summary, and deep-dive sections
+  - Updated chunking modal action handler to support all foundational functions through proper routing
+  - All foundational functions now working from both selection toolbar and large text chunking modal
+  - Application stability restored with no crashes or validation errors
