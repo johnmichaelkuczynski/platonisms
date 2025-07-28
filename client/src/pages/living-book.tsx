@@ -116,7 +116,7 @@ export default function LivingBook() {
 
 
 
-  const handleChunkAction = (chunk: string, chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test') => {
+  const handleChunkAction = (chunk: string, chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test' | 'summary-thesis' | 'thesis-deep-dive' | 'podcast' | 'suggested-readings' | 'cognitive-map') => {
     if (action === 'quiz') {
       setSelectedTextForQuiz(chunk);
       setQuizChunkIndex(chunkIndex);
@@ -135,6 +135,16 @@ export default function LivingBook() {
       setSelectedTextForStudentTest(chunk);
       setStudentTestChunkIndex(chunkIndex);
       setStudentTestModalOpen(true);
+    } else if (action === 'summary-thesis') {
+      handleCreateSummaryWithThesisFromSelection(chunk);
+    } else if (action === 'thesis-deep-dive') {
+      handleCreateThesisDeepDiveFromSelection(chunk);
+    } else if (action === 'suggested-readings') {
+      handleCreateSuggestedReadingsFromSelection(chunk);
+    } else if (action === 'podcast') {
+      handleGeneratePodcastFromSelection(chunk);
+    } else if (action === 'cognitive-map') {
+      handleCreateCognitiveMapFromSelection(chunk);
     }
   };
 
@@ -201,27 +211,111 @@ export default function LivingBook() {
     }
   };
 
-  const handleCreateSummaryWithThesisFromSelection = (text: string) => {
-    const wordCount = text.split(/\s+/).length;
-    
-    if (wordCount > 1000) {
-      setPendingChunkText(text);
-      setChunkingModalOpen(true);
-    } else {
-      setSelectedTextForSummaryWithThesis(text);
-      setSummaryWithThesisModalOpen(true);
+  const handleCreateSummaryWithThesisFromSelection = async (text: string) => {
+    try {
+      toast({
+        title: "Generating Summary with Thesis",
+        description: "Analyzing text and identifying main arguments...",
+      });
+
+      const response = await fetch('/api/generate-summary-with-thesis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          sourceText: text,
+          model: selectedModel,
+          instructions: "",
+          chunkIndex: null
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to generate summary with thesis');
+      }
+
+      const data = await response.json();
+      
+      // Get the summary content
+      const summaryWithThesis = data.summaryWithThesis;
+      let summaryContent = `**THESIS:**\n${summaryWithThesis.thesis}\n\n**SUMMARY:**\n${summaryWithThesis.summary}`;
+      
+      // Add message directly to chat by sending it as a chat message
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          message: `Summary with Thesis Analysis:\n\n${summaryContent}`,
+          model: selectedModel
+        })
+      });
+
+      toast({
+        title: "Summary Generated",
+        description: "Thesis analysis added to chat.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
-  const handleCreateThesisDeepDiveFromSelection = (text: string) => {
-    const wordCount = text.split(/\s+/).length;
-    
-    if (wordCount > 1000) {
-      setPendingChunkText(text);
-      setChunkingModalOpen(true);
-    } else {
-      setSelectedTextForThesisDeepDive(text);
-      setThesisDeepDiveModalOpen(true);
+  const handleCreateThesisDeepDiveFromSelection = async (text: string) => {
+    try {
+      toast({
+        title: "Generating Thesis Deep-Dive",
+        description: "Conducting in-depth analysis of core arguments...",
+      });
+
+      const response = await fetch('/api/generate-thesis-deep-dive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          sourceText: text,
+          model: selectedModel,
+          instructions: "",
+          chunkIndex: null
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to generate thesis deep-dive');
+      }
+
+      const data = await response.json();
+      
+      // Get the deep-dive content
+      const thesisDeepDive = data.thesisDeepDive;
+      let deepDiveContent = `**EXTRACTED THESIS:**\n${thesisDeepDive.extractedThesis}\n\n**ORIGINAL WORDING:**\n${thesisDeepDive.originalWording}\n\n**MODERN APPLICATIONS:**\n${thesisDeepDive.modernApplications}\n\n**CROSS-COMPARISON:**\n${thesisDeepDive.crossComparison}`;
+      
+      // Add message directly to chat by sending it as a chat message
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          message: `Thesis Deep-Dive Analysis:\n\n${deepDiveContent}`,
+          model: selectedModel
+        })
+      });
+
+      toast({
+        title: "Deep-Dive Generated",
+        description: "Detailed thesis analysis added to chat.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
