@@ -6,7 +6,7 @@ export const bookContent: BookContent = {
   sections: [
     {
       id: "section-1",
-      title: "Section 1",
+      title: "1.0 Empiricism vs. Rationalism",
       content: `1.0 Empiricism vs. rationalism
 
 We obviously acquire a great deal of knowledge through "sense-perception" (i.e., through sight, hearing, touch, and so forth). According to a doctrine known as "empiricism," all knowledge is derived from sense-perception.
@@ -57,7 +57,7 @@ The problem with this view is that, as previously noted, every sentence and ever
     },
     {
       id: "section-2",
-      title: "Section 2",
+      title: "2.0 The Need for Universals",
       content: `Also, some basic logic shows that universals exist. Consider the following inference: "Bob and Ted are both human; therefore, there is some characteristic that they have in common." That is a valid inference; and the conclusion affirms the existence of a universal. ("Characteristic" is synonymous with "universal.")
 
 Finally, many statements straightforwardly presuppose or affirm the existence of universals; and were it not for statements of this kind, many obvious truths couldn't be expressed. Consider the following statements:
@@ -114,7 +114,7 @@ The proof that your visual perception of the diagram had only a triggering role,
     },
     {
       id: "section-3",
-      title: "Section 3",
+      title: "3.0 Non-Perceptual Knowledge Prerequisites",
       content: `have no effect on the geometrical truths that you learned that day. The reason is that those geometrical truths (e.g., area of a triangles = bh/2) were simply not part of the content of what your senses were telling you.
 
 By contrast, if you forget ever seeing the dog (described in the last section), you will forget the information that, on that occasion, your senses led you to have. The reason is that, in that context, your senses weren't serving the purpose of jogging your ability to acquire knowledge in some non-sensory way (viz. through rational insight) but were themselves the bearers of the information learned.
@@ -149,7 +149,7 @@ Could "1 + 1 = 2" express that very truth-the one just described-and be false? N
     },
     {
       id: "section-4",
-      title: "Section 4",
+      title: "4.0 Pre-Perceptual Knowledge Requirements",
       content: `Innate cognitive structures are needed to have sense-perceptions and also to learn from them. Having a sense-perception means having a certain kind of mental representation of an object. Not all mental representations of objects are sense-perceptions. Mental images aren't, even though they resemble them. Concepts aren't, and they don't resemble them. It's a delicate matter exactly what kinds of representations are perceptual: a necessary condition, certainly, is that they be caused by their objects-your perception of Smith must be caused by Smith (by light bouncing off of him). It also seems necessary that (with certain qualifications) your perception "co-vary," or be capable of co-varying, in real time with the thing perceived. If you're looking at Smith, and he moves, you see him move (provided certain conditions are met; e.g., the movement isn't infinitesimally small). It's unclear whether there are other conditions that have to be met. (There probably are.)
 
 In any case, perceptions are mental representations. And they represent their objects in four dimensions, and as having various chromatic (color-related), kinematic (movement-related), dynamic (force-related, causal) properties. Unless we take the implausible view that no intelligence is involved in the processes mediating between the somatic disturbances that lead to sense-perceptions, on the one hand, and those sense-perceptions themselves, on the other, none of this would be possible unless your mind, at some level, had some kind of pre-perceptual understanding of what it is for two things to be spatially, dynamically, etc., interrelated. So, in all likelihood, sense-perception presupposes knowledge.
@@ -178,7 +178,7 @@ What sort of image would represent S? Obviously you could have an image of Smith
     },
     {
       id: "section-5",
-      title: "Section 5",
+      title: "5.0 Thoughts Are Not Pictorial",
       content: `Of course, you could create a system of symbolism involving images that represented that supposed truth (e.g., you could stipulate it would be representing by putting an image of Smith falling off the fence on top of an image of Smith with a broken leg). But that wouldn't be an image of its being the case that Smith would have broken his leg if he'd fallen off the fence. It would be an image of Smith falling off the fence on top of an image of Smith having a broken leg. Relative to some convention, the one image's being on top of the other would represent that dependence relation. But it wouldn't be an image of it. Relative to certain conventions, the expression "Socrates" represents Socrates, but it isn't an image of him. It's a non-iconic representation of him. And putting one image on top of another is no more a case of producing an image of a dependence relation than saying "Socrates" is producing an image of Socrates.
 
 But even if there could be some image of this dependence relation, there would still be no image that had S for its content. There is a difference between believing S, on the one hand, and:
@@ -219,7 +219,7 @@ There's a difference between an image, on the one hand, and that image's being r
     },
     {
       id: "section-6",
-      title: "Section 6",
+      title: "6.0 Berkeley and Empiricism's Collapse into Idealism",
       content: `A corollary is that there is no image such that, merely by virtue of experiencing it, one is grasping the concept of truth. To know something, one must believe it to be true. Believing something to be true thus involves grasping the concept of truth and, given what we just said, therefore involves grasping something that cannot possibly be grasped by experiencing an image. Since the senses provide us only with images, it follows that the concept of truth is one that is not be grasped through the senses. And since a grasp of that concept is a prerequisite to knowing anything, it follows that, contrary to what empiricism says, not all knowledge is strictly sense-based. In fact, it follows that, although a great deal of knowledge is obviously largely sense-based, no knowledge is strictly sense-based.
 
 6.0 George Berkeley and the collapse of empiricism into idealism
@@ -276,7 +276,7 @@ Path #1 evaluated: Supposing that we decide that some of our perceptions are wro
     },
     {
       id: "section-7",
-      title: "Section 7",
+      title: "6.1 Berkeley's Argument Analysis",
       content: `If we do it on the basis of some principle known to us in some non-sensory manner, we're not empiricists any more. So, given that we're empiricists, it cannot be on the basis of such a principle.
 
 So it must be on the basis of some principle known to us through observation-supposing that it's made on the basis of any principle at all. But all of the perceptions we're talking about are equally credible. Remember that we're setting aside dream-images, hallucinations, etc. We're focusing only on garden-variety perceptions-those that, unless our senses are constantly deceiving us, must be correct.
@@ -325,7 +325,7 @@ Step 9: But remember Step 2-we do know about things. We do know their sizes, tem
     },
     {
       id: "section-8",
-      title: "Section 8",
+      title: "6.2 Problems with Berkeley's Argument",
       content: `Conclusion: For something to exist s i for it to be perceived. The perception doesn't represent the thing. The perception constitutes the thing.
 
 6.2 The problem with Berkeley's argument: its failure to take into account the relational nature of perceptual information
@@ -372,7 +372,7 @@ There is nothing incoherent about (iv); it doesn't attribute incompatible proper
     },
     {
       id: "section-9",
-      title: "Section 9",
+      title: "6.3 How We Learn Properties",
       content: `As we've noted, our senses give us only relational information; they tell us, not that the object x weighs 80 pounds, but that it weighs more than object y; not that object x is moving at a rate of 50 mph, but that it is moving faster than y; not that x has a temperature of 78°, but that x is warmer than y; and so on. At the same time, we're obviously capable of learning objects' actual masses, temperatures, and such. But how is this possible if our senses give us only relational information?
 
 To answer this question, we must take a brief detour through the philosophy of science. Suppose you decide to measure time in terms of your own heart rate. You'll find that, when you do vigorous exercise, everything in the universe (other than your heart rate itself) slows down. (Your heart rate does not itself slow down; for, being the standard of comparison, its rate is by definition constant.) And you'll find that, when you are calm and relaxed, everything in the universe speeds up.
@@ -413,7 +413,7 @@ According to some, the essence of Berkeley's argument for idealism is that prima
     },
     {
       id: "section-10",
-      title: "Section 10",
+      title: "6.4 Primary vs. Secondary Properties",
       content: `Berkeley's argument (BA): For a thing to have a given secondary property is for it to taste, smell, feel, etc., a certain way. Some philosophers hold that, in this respect, shape, size, and other so-called primary properties are fundamentally different from secondary properties. But they're wrong. Shape, size, etc., are quite as observer-dependent as taste, color, etc. When you're near the house, it looks big (we're assuming that your perception is accurate); and when you're far from the house, it looks small (same qualification). Of course, we could say that the size an object seems to have is different from the size it actually has. But in that case, we'd be stuck saying that our senses tell us nothing, or next to nothing, about the external world, which is absurd. It follows (for the reasons given in 6.1) that the objects of sense-perception are identical with our perceptions of them.
 
 The problem with BA is that, contrary to what it says, your first house-perception is consistent with your second house-perception. The first perception doesn't say that the house is big. It tells you how its size compares with those of various objects. It tells you that it's shorter than the telephone pole next to it, but taller than the cactus in front of it, etc. The comparative information given to you by your second perception is consistent with it. The relative apparent sizes of the cactus, house, and telephone pole are the same.
@@ -452,7 +452,7 @@ A relevant fact about method (ii) is that many scientific techniques would have 
     },
     {
       id: "section-11",
-      title: "Section 11",
+      title: "6.5 Second Berkeleyan Argument",
       content: `There are some apparent counterexamples to our contention that secondary properties track microstructure. For example, a thing's color doesn't correlate reliably with its microstructure. From far away, the ocean water looks black; from up close it's transparent. Locke concluded from this that secondary properties are subjective.
 
 But this is not the only conclusion to draw. An object's apparent color is a function both of that object's microstructure and of the relevant observer's physical relation to that object. But so does an object's apparent shape, apparent size, smell, etc. So the variability of apparent color no more entails the subjectivity of color than does the variability of apparent shape. And so long as the conditions of observation are held constant, an object's apparent color does reliably correlate with its microstructure, just like its apparent shape (though not, it must be admitted, to as high a degree).
@@ -497,7 +497,7 @@ But I argued that secondary properties aren't mind-dependent. I reject step (i),
     },
     {
       id: "section-12",
-      title: "Section 12",
+      title: "7.0 The Phenomenal Reduction",
       content: `Some properties that seem to be secondary turn out to be primary. A brief examination of one such property will clarify some of the points just made.
 
 For an object to have a certain temperature is for the particles composing it to have a certain mean kinetic energy. (Basically, it's for those particles to move around in a certain way. The faster the movements, the greater the temperature.) But it's initially tempting to categorize temperature with sweetness and, thus, to see it as secondary property.
@@ -564,7 +564,7 @@ sentences are meaningful only to the extent that, if true, they make a differenc
     },
     {
       id: "section-13",
-      title: "Section 13",
+      title: "7.1 Perceptions as Evidence",
       content: `In this context, I'll use the word "perception" to denote any mental state that, if veridical, is an accurate sensory observation but that needn't be veridical. Thus, hallucinations are perceptions, as we'll be using that word, and so are veridical perceptions.
 
 You have a perception of Smith driving a car. Let P be that perception. P is obviously evidence, albeit defeasible evidence, that Smith is driving a car. Berkeley admits this. In other words, Berkeley admits-as he surely must-that, other things being equal, your having a perception of Smith driving a car gives some weight to the contention that Smith is driving a car.
@@ -619,7 +619,7 @@ This doesn't mean that there is no fact as to what is out there. There obviously
     },
     {
       id: "section-14",
-      title: "Section 14",
+      title: "8.0 Berkeley's Two Insights",
       content: `It also seems to undermine Berkeley's claim that any object-statement that is presumed correct (e.g. 'the world doesn't' disappear when I close my eyes') is equivalent with a statement stating the observational evidence for that claim. When I close my eyes, the observational evidence seems to suggest that the world has van
 
 ished. And it's only, so it is thought (or so I personally think), because one knows that one's observations aren't the one and only relevant yardstick that one knows that the world hasn't disappeared.
