@@ -224,9 +224,7 @@ export default function LivingBook() {
         credentials: 'include',
         body: JSON.stringify({
           sourceText: text,
-          model: selectedModel,
-          instructions: "",
-          chunkIndex: null
+          model: selectedModel
         })
       });
 
@@ -278,9 +276,7 @@ export default function LivingBook() {
         credentials: 'include',
         body: JSON.stringify({
           sourceText: text,
-          model: selectedModel,
-          instructions: "",
-          chunkIndex: null
+          model: selectedModel
         })
       });
 
