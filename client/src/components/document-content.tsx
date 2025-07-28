@@ -345,11 +345,27 @@ export default function DocumentContent({
         isOpen={showChunkingModal}
         onClose={() => setShowChunkingModal(false)}
         text={selectedTextForChunking}
-        onChunkAction={(chunk: string, chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test') => {
+        onChunkAction={(chunk: string, chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test' | 'summary-thesis' | 'thesis-deep-dive' | 'podcast' | 'suggested-readings' | 'cognitive-map') => {
           if (action === 'chat' && onTextSelectedForChat) {
             onTextSelectedForChat(chunk);
           } else if (action === 'rewrite' && onRewriteFromSelection) {
             onRewriteFromSelection(chunk);
+          } else if (action === 'study-guide' && onCreateStudyGuide) {
+            onCreateStudyGuide(chunk);
+          } else if (action === 'quiz' && onTestMe) {
+            onTestMe(chunk);
+          } else if (action === 'student-test' && onTestMe) {
+            onTestMe(chunk);
+          } else if (action === 'summary-thesis' && onSummaryWithThesis) {
+            onSummaryWithThesis(chunk);
+          } else if (action === 'thesis-deep-dive' && onThesisDeepDive) {
+            onThesisDeepDive(chunk);
+          } else if (action === 'suggested-readings' && onSuggestedReadings) {
+            onSuggestedReadings(chunk);
+          } else if (action === 'podcast' && onGeneratePodcast) {
+            onGeneratePodcast(chunk);
+          } else if (action === 'cognitive-map' && onCreateCognitiveMap) {
+            onCreateCognitiveMap(chunk);
           }
         }}
       />

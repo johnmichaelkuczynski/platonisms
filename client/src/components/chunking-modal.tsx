@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, MessageSquare, Edit3, X, BookOpen, FileQuestion, GraduationCap } from "lucide-react";
+import { FileText, MessageSquare, Edit3, X, BookOpen, FileQuestion, GraduationCap, Target, Brain, Volume2, GitBranch } from "lucide-react";
 
 interface ChunkingModalProps {
   isOpen: boolean;
   onClose: () => void;
   text: string;
-  onChunkAction: (chunk: string, chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test') => void;
+  onChunkAction: (chunk: string, chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test' | 'summary-thesis' | 'thesis-deep-dive' | 'podcast' | 'suggested-readings' | 'cognitive-map') => void;
 }
 
 export default function ChunkingModal({ isOpen, onClose, text, onChunkAction }: ChunkingModalProps) {
@@ -17,12 +17,12 @@ export default function ChunkingModal({ isOpen, onClose, text, onChunkAction }: 
   
   // Split text into chunks
   const words = (text || '').split(/\s+/);
-  const chunks = [];
+  const chunks: string[] = [];
   for (let i = 0; i < words.length; i += chunkSize) {
     chunks.push(words.slice(i, i + chunkSize).join(' '));
   }
 
-  const handleChunkAction = (chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test') => {
+  const handleChunkAction = (chunkIndex: number, action: 'quiz' | 'chat' | 'rewrite' | 'study-guide' | 'student-test' | 'summary-thesis' | 'thesis-deep-dive' | 'podcast' | 'suggested-readings' | 'cognitive-map') => {
     onChunkAction(chunks[chunkIndex], chunkIndex, action);
     onClose();
   };
@@ -66,7 +66,57 @@ export default function ChunkingModal({ isOpen, onClose, text, onChunkAction }: 
                     {chunk.substring(0, 200)}...
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleChunkAction(index, 'summary-thesis')}
+                      className="text-amber-600 border-amber-200 hover:bg-amber-50"
+                    >
+                      <Target className="w-3 h-3 mr-1" />
+                      Summary+Thesis
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleChunkAction(index, 'thesis-deep-dive')}
+                      className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                    >
+                      <Brain className="w-3 h-3 mr-1" />
+                      Thesis Deep-Dive
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleChunkAction(index, 'suggested-readings')}
+                      className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                    >
+                      <BookOpen className="w-3 h-3 mr-1" />
+                      Suggested Readings
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleChunkAction(index, 'podcast')}
+                      className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                    >
+                      <Volume2 className="w-3 h-3 mr-1" />
+                      Podcast
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleChunkAction(index, 'cognitive-map')}
+                      className="text-teal-600 border-teal-200 hover:bg-teal-50"
+                    >
+                      <GitBranch className="w-3 h-3 mr-1" />
+                      Cognitive Map
+                    </Button>
+                    
                     <Button
                       size="sm"
                       variant="outline"

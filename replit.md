@@ -805,3 +805,10 @@ Preferred communication style: Simple, everyday language.
   - PROGRESS INDICATOR ADDED: Implemented loading state with spinning wheel and "Searching..." text during 7-14 second generation
   - FRONTEND LOADING UX: Added Loader2 spinner icon, disabled button state, and toast notification during generation process
   - BULLET POINT ENFORCEMENT: Enhanced backend formatting with regex conversion of numbered/dash lists to proper bullet points
+- July 28, 2025: CRITICAL CHUNKING MODAL FIX - Complete foundational functions access restored
+  - FIXED missing options in large text selection popup: Summary+Thesis, Thesis Deep-Dive, Podcast, Suggested Readings, Cognitive Map
+  - Enhanced chunking modal with all 10 available functions instead of just 5 basic ones
+  - Updated modal layout to 3-column grid for better organization of all functions
+  - Added proper action handlers in document-content.tsx for all foundational functions
+  - Users can now access all AI-powered features even when selecting large amounts of text (>1000 words)
+  - Fixed TypeScript errors in chunking modal with explicit string array typing
