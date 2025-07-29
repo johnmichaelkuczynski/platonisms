@@ -620,9 +620,7 @@ This doesn't mean that there is no fact as to what is out there. There obviously
     {
       id: "section-14",
       title: "8.0 Berkeley's Two Insights",
-      content: `It also seems to undermine Berkeley's claim that any object-statement that is presumed correct (e.g. 'the world doesn't' disappear when I close my eyes') is equivalent with a statement stating the observational evidence for that claim. When I close my eyes, the observational evidence seems to suggest that the world has van
-
-ished. And it's only, so it is thought (or so I personally think), because one knows that one's observations aren't the one and only relevant yardstick that one knows that the world hasn't disappeared.
+      content: `It also seems to undermine Berkeley's claim that any object-statement that is presumed correct (e.g. 'the world doesn't' disappear when I close my eyes') is equivalent with a statement stating the observational evidence for that claim. When I close my eyes, the observational evidence seems to suggest that the world has vanished. And it's only, so it is thought (or so I personally think), because one knows that one's observations aren't the one and only relevant yardstick that one knows that the world hasn't disappeared.
 
 Berkeley's response to this is brilliant. He says that the real meaning of
 
