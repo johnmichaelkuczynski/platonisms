@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BookOpen, Edit3, FileText, User, LogOut, CreditCard, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavigationSidebar from "@/components/navigation-sidebar";
@@ -78,6 +78,7 @@ export default function LivingBook() {
         ? Math.min(currentWidth + increment, device === 'desktop' ? 400 : 160) // Max 400px desktop, 160px mobile
         : Math.max(currentWidth - increment, device === 'desktop' ? 64 : 16);   // Min 64px desktop, 16px mobile
       
+      console.log(`Adjusting nav width: ${device} ${direction} from ${currentWidth}px to ${newWidth}px`);
       return { ...prev, [device]: newWidth };
     });
   };
@@ -90,6 +91,7 @@ export default function LivingBook() {
         ? Math.min(currentWidth + increment, device === 'desktop' ? 400 : 160) // Max 400px desktop, 160px mobile
         : Math.max(currentWidth - increment, device === 'desktop' ? 64 : 16);   // Min 64px desktop, 16px mobile
       
+      console.log(`Adjusting chat width: ${device} ${direction} from ${currentWidth}px to ${newWidth}px`);
       return { ...prev, [device]: newWidth };
     });
   };
@@ -106,14 +108,14 @@ export default function LivingBook() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Generate inline styles for dynamic widths
-  const getNavWidthStyle = () => ({
+  // Generate inline styles for dynamic widths - memoized to trigger re-renders
+  const navWidthStyle = useMemo(() => ({
     width: isDesktop ? `${navWidth.desktop}px` : `${navWidth.mobile}px`
-  });
+  }), [isDesktop, navWidth.desktop, navWidth.mobile]);
   
-  const getChatWidthStyle = () => ({
+  const chatWidthStyle = useMemo(() => ({
     width: isDesktop ? `${chatWidth.desktop}px` : `${chatWidth.mobile}px`
-  });
+  }), [isDesktop, chatWidth.desktop, chatWidth.mobile]);
 
 
 
@@ -717,7 +719,7 @@ export default function LivingBook() {
         {/* Navigation Sidebar - Adjustable Width */}
         <div 
           className="flex-shrink-0"
-          style={getNavWidthStyle()}
+          style={navWidthStyle}
         >
           <NavigationSidebar />
         </div>
@@ -746,7 +748,7 @@ export default function LivingBook() {
         {/* Chat Panel - Adjustable Width */}
         <div 
           className="flex-shrink-0"
-          style={getChatWidthStyle()}
+          style={chatWidthStyle}
         >
           <ChatInterface 
             selectedModel={selectedModel} 
