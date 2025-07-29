@@ -852,3 +852,12 @@ Preferred communication style: Simple, everyday language.
   - Voice functionality now works reliably across all browsers with microphone access and Google Speech API
   - Complete workflow: click microphone → record audio → send to Google API → receive transcript → populate interface
   - Admin user tested successfully with transcriptions: "Hoping this thing works" and document summarization requests
+- July 29, 2025: REWRITE MODAL VOICE INPUT OPTIMIZATION - Fixed glitchy behavior for smooth user experience
+  - RESOLVED glitchy behavior in rewrite input box by optimizing voice transcription handling
+  - CHANGED voice input to append to existing instructions instead of replacing entire content
+  - REMOVED excessive debug console logging that was causing performance issues and spam
+  - IMPROVED button state management to prevent race conditions and multiple simultaneous recordings
+  - ADDED proper disabled state handling to prevent accidental clicks during processing
+  - OPTIMIZED voice service support detection to reduce unnecessary function calls
+  - VERIFIED SMOOTH OPERATION: Voice input "Rewrite this as a dialogue" successfully processed and executed
+  - Voice input in rewrite modal now works seamlessly with existing text without interference
