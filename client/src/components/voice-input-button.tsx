@@ -28,6 +28,10 @@ export default function VoiceInputButton({
   const isSupported = voiceService.isSupported();
 
   useEffect(() => {
+    // Debug speech recognition support
+    console.log('Voice service supported:', isSupported);
+    console.log('SpeechRecognition available:', !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition);
+    
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -35,11 +39,11 @@ export default function VoiceInputButton({
     };
   }, []);
 
-  const startListening = () => {
+  const startListening = async () => {
     if (!isSupported || disabled) {
       toast({
         title: "Voice input not available",
-        description: "Speech recognition is not supported in this browser.",
+        description: `Speech recognition is not supported in this browser. Supported: ${isSupported}, Disabled: ${disabled}`,
         variant: "destructive"
       });
       return;
@@ -48,7 +52,7 @@ export default function VoiceInputButton({
     setIsListening(true);
     setInterimTranscript('');
 
-    voiceService.startListening(
+    await voiceService.startListening(
       (transcript, isInterim) => {
         if (isInterim) {
           setInterimTranscript(transcript);
@@ -123,17 +127,18 @@ export default function VoiceInputButton({
     }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (isListening) {
       stopListening();
     } else {
-      startListening();
+      await startListening();
     }
   };
 
-  if (!isSupported) {
-    return null; // Don't show button if not supported
-  }
+  // Always show the button, but show error if not supported
+  // if (!isSupported) {
+  //   return null; // Don't show button if not supported
+  // }
 
   return (
     <div className="relative">

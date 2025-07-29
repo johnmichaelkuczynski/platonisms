@@ -1,83 +1,127 @@
-// Google Speech-to-Text Web Speech API service
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-  resultIndex: number;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-  message: string;
-}
-
+// Google Speech-to-Text API service using MediaRecorder and backend
 export class VoiceService {
-  private recognition: any = null;
+  private mediaRecorder: MediaRecorder | null = null;
+  private audioChunks: Blob[] = [];
   private isListening = false;
+  private stream: MediaStream | null = null;
 
   constructor() {
-    // Check if browser supports speech recognition
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
-    if (SpeechRecognition) {
-      this.recognition = new SpeechRecognition();
-      this.setupRecognition();
-    }
-  }
-
-  private setupRecognition() {
-    if (!this.recognition) return;
-
-    // Configure speech recognition
-    this.recognition.continuous = false;
-    this.recognition.interimResults = true;
-    this.recognition.lang = 'en-US';
-    this.recognition.maxAlternatives = 1;
+    // This service will always be "supported" since we use MediaRecorder + backend API
   }
 
   isSupported(): boolean {
-    return this.recognition !== null;
+    // Check if MediaRecorder is available (supported in most modern browsers)
+    const hasMediaRecorder = typeof MediaRecorder !== 'undefined';
+    const hasMediaDevices = !!navigator.mediaDevices;
+    const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    
+    console.log('Voice service support check:', {
+      hasMediaRecorder,
+      hasMediaDevices,
+      hasGetUserMedia
+    });
+    
+    return hasMediaRecorder && hasMediaDevices && hasGetUserMedia;
   }
 
-  startListening(
+  async startListening(
     onResult: (transcript: string, isInterim: boolean) => void,
     onError: (error: string) => void,
     onEnd: () => void
-  ): void {
-    if (!this.recognition || this.isListening) return;
-
-    this.isListening = true;
-
-    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const results = event.results;
-      const lastResult = results[results.length - 1];
-      const transcript = lastResult[0].transcript;
-      const isInterim = !lastResult.isFinal;
-      
-      onResult(transcript, isInterim);
-    };
-
-    this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      this.isListening = false;
-      onError(`Speech recognition error: ${event.error}`);
-    };
-
-    this.recognition.onend = () => {
-      this.isListening = false;
-      onEnd();
-    };
+  ): Promise<void> {
+    if (this.isListening) return;
 
     try {
-      this.recognition.start();
+      // Get user media (microphone access)
+      this.stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          channelCount: 1,
+          sampleRate: 48000,
+        } 
+      });
+
+      this.audioChunks = [];
+      this.isListening = true;
+
+      // Create MediaRecorder instance
+      const options = { mimeType: 'audio/webm;codecs=opus' };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        // Fallback to default
+        this.mediaRecorder = new MediaRecorder(this.stream);
+      } else {
+        this.mediaRecorder = new MediaRecorder(this.stream, options);
+      }
+
+      // Collect audio data
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.audioChunks.push(event.data);
+        }
+      };
+
+      // Handle recording stop
+      this.mediaRecorder.onstop = async () => {
+        try {
+          const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm;codecs=opus' });
+          console.log('Audio blob created:', { size: audioBlob.size, type: audioBlob.type });
+
+          // Send to backend for transcription
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'recording.webm');
+
+          const response = await fetch('/api/transcribe-speech', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Transcription failed');
+          }
+
+          const result = await response.json();
+          console.log('Transcription result:', result);
+
+          if (result.success && result.transcript) {
+            onResult(result.transcript, false); // Final result
+          } else {
+            throw new Error('No transcript received');
+          }
+        } catch (error) {
+          console.error('Transcription error:', error);
+          onError(`Transcription failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+          this.cleanup();
+          onEnd();
+        }
+      };
+
+      // Start recording
+      this.mediaRecorder.start();
+      console.log('Voice recording started');
+
     } catch (error) {
       this.isListening = false;
-      onError(`Failed to start speech recognition: ${error}`);
+      this.cleanup();
+      onError(`Failed to start recording: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
   stopListening(): void {
-    if (this.recognition && this.isListening) {
-      this.recognition.stop();
+    if (this.mediaRecorder && this.isListening) {
+      console.log('Stopping voice recording');
+      this.mediaRecorder.stop();
       this.isListening = false;
     }
+  }
+
+  private cleanup(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+    this.mediaRecorder = null;
+    this.audioChunks = [];
   }
 
   getIsListening(): boolean {

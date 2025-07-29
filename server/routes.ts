@@ -14,6 +14,7 @@ import { getFullDocumentContent } from "./services/document-processor";
 
 import { generatePDF } from "./services/pdf-generator";
 import { transcribeAudio } from "./services/speech-service";
+import { googleSpeechService } from "./services/google-speech-service";
 import { register, login, createSession, getUserFromSession, canAccessFeature, getPreviewResponse, isAdmin, hashPassword } from "./auth";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault, verifyPaypalTransaction } from "./safe-paypal";
 import { chatRequestSchema, instructionRequestSchema, rewriteRequestSchema, quizRequestSchema, studyGuideRequestSchema, studentTestRequestSchema, submitTestRequestSchema, generateCognitiveMapRequestSchema, summaryWithThesisRequestSchema, thesisDeepDiveRequestSchema, insertSuggestedReadingsSchema, registerRequestSchema, loginRequestSchema, purchaseRequestSchema, type AIModel } from "@shared/schema";
@@ -1473,6 +1474,38 @@ FEEDBACK: [explanation focusing on content accuracy]`;
     } catch (error) {
       console.error("Podcast generation error:", error);
       res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate podcast" });
+    }
+  });
+
+  // Speech transcription endpoint using Google Speech-to-Text API
+  app.post("/api/transcribe-speech", upload.single('audio'), async (req, res) => {
+    try {
+      if (!googleSpeechService) {
+        return res.status(503).json({ error: "Google Speech API not configured" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      console.log("Received audio file:", {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      });
+
+      const transcript = await googleSpeechService.transcribeAudio(req.file.buffer);
+      
+      res.json({ 
+        transcript: transcript.trim(),
+        success: true 
+      });
+    } catch (error) {
+      console.error("Speech transcription error:", error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Failed to transcribe audio",
+        success: false 
+      });
     }
   });
 
