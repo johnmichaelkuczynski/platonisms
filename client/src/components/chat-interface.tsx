@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { copyToClipboard, downloadPDF, emailContent } from "@/lib/export-utils";
 import { renderMathInElement, renderMathString } from "@/lib/math-renderer";
 import type { AIModel, ChatMessage } from "@shared/schema";
+import VoiceInputButton from "@/components/voice-input-button";
 
 interface ChatInterfaceProps {
   selectedModel: AIModel;
@@ -404,18 +405,41 @@ export default function ChatInterface({ selectedModel, mathMode = true, selected
           )}
           
           <form onSubmit={handleSubmit} className="space-y-3">
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={selectedText ? "Ask about the selected text..." : "Ask a question about the document..."}
-              className="min-h-[80px] resize-none text-sm"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
-            />
+            <div className="relative">
+              <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={selectedText ? "Ask about the selected text..." : "Ask a question about the document..."}
+                className="min-h-[80px] resize-none text-sm pr-12"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
+              />
+              <div className="absolute top-2 right-2">
+                <VoiceInputButton
+                  onTranscript={(text) => {
+                    setMessage(text);
+                    // Auto-submit after voice input for chat
+                    setTimeout(() => {
+                      if (text.trim()) {
+                        chatMutation.mutate({
+                          message: selectedText ? `About this highlighted passage: "${selectedText}"\n\n${text}` : text,
+                          model: selectedModel,
+                        });
+                        if (selectedText && onSelectedTextUsed) {
+                          onSelectedTextUsed();
+                        }
+                      }
+                    }, 100);
+                  }}
+                  disabled={chatMutation.isPending}
+                  className="p-1"
+                />
+              </div>
+            </div>
             <div className="flex justify-end">
               <Button 
                 type="submit" 

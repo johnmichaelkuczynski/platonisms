@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { renderMathInElement } from "@/lib/math-renderer";
+import VoiceInputButton from "@/components/voice-input-button";
 
 interface RewriteModalProps {
   isOpen: boolean;
@@ -287,18 +288,30 @@ export default function RewriteModal({
               {/* Instructions */}
               <div>
                 <label className="text-sm font-medium">Rewriting Instructions</label>
-                <Textarea
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleRewrite();
-                    }
-                  }}
-                  placeholder="Describe how you want the text to be rewritten (e.g., 'Make it more formal', 'Simplify the language', 'Add more examples'). Press Enter to start rewrite, Shift+Enter for new line."
-                  className="mt-1 min-h-[80px]"
-                />
+                <div className="relative mt-1">
+                  <Textarea
+                    value={instructions}
+                    onChange={(e) => setInstructions(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleRewrite();
+                      }
+                    }}
+                    placeholder="Describe how you want the text to be rewritten (e.g., 'Make it more formal', 'Simplify the language', 'Add more examples'). Press Enter to start rewrite, Shift+Enter for new line."
+                    className="min-h-[80px] pr-12"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <VoiceInputButton
+                      onTranscript={(text) => {
+                        setInstructions(text);
+                        // Do NOT auto-submit for rewrite modal - just insert text
+                      }}
+                      disabled={rewriteMutation.isPending}
+                      className="p-1"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Mode-specific content */}
