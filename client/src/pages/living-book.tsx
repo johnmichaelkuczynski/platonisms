@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BookOpen, Edit3, FileText, User, LogOut, CreditCard } from "lucide-react";
+import { BookOpen, Edit3, FileText, User, LogOut, CreditCard, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavigationSidebar from "@/components/navigation-sidebar";
 import DocumentContent from "@/components/document-content";
@@ -62,6 +62,58 @@ export default function LivingBook() {
   const [suggestedReadingsLoading, setSuggestedReadingsLoading] = useState(false);
   const [summaryWithThesisLoading, setSummaryWithThesisLoading] = useState(false);
   const [thesisDeepDiveLoading, setThesisDeepDiveLoading] = useState(false);
+
+  // Width adjustment state - using pixel values for more flexibility
+  const [showWidthControls, setShowWidthControls] = useState(false);
+  const [navWidth, setNavWidth] = useState({ desktop: 240, mobile: 80 }); // 240px, 80px
+  const [chatWidth, setChatWidth] = useState({ desktop: 192, mobile: 16 }); // 192px, 16px
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  // Width adjustment functions using pixel values
+  const adjustNavWidth = (device: 'desktop' | 'mobile', direction: 'increase' | 'decrease') => {
+    setNavWidth(prev => {
+      const increment = device === 'desktop' ? 32 : 16; // 32px desktop, 16px mobile
+      const currentWidth = prev[device];
+      const newWidth = direction === 'increase' 
+        ? Math.min(currentWidth + increment, device === 'desktop' ? 400 : 160) // Max 400px desktop, 160px mobile
+        : Math.max(currentWidth - increment, device === 'desktop' ? 64 : 16);   // Min 64px desktop, 16px mobile
+      
+      return { ...prev, [device]: newWidth };
+    });
+  };
+
+  const adjustChatWidth = (device: 'desktop' | 'mobile', direction: 'increase' | 'decrease') => {
+    setChatWidth(prev => {
+      const increment = device === 'desktop' ? 32 : 16;
+      const currentWidth = prev[device];
+      const newWidth = direction === 'increase' 
+        ? Math.min(currentWidth + increment, device === 'desktop' ? 400 : 160) // Max 400px desktop, 160px mobile
+        : Math.max(currentWidth - increment, device === 'desktop' ? 64 : 16);   // Min 64px desktop, 16px mobile
+      
+      return { ...prev, [device]: newWidth };
+    });
+  };
+
+  // Handle responsive width calculation
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Generate inline styles for dynamic widths
+  const getNavWidthStyle = () => ({
+    width: isDesktop ? `${navWidth.desktop}px` : `${navWidth.mobile}px`
+  });
+  
+  const getChatWidthStyle = () => ({
+    width: isDesktop ? `${chatWidth.desktop}px` : `${chatWidth.mobile}px`
+  });
 
 
 
@@ -452,6 +504,17 @@ export default function LivingBook() {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setShowWidthControls(!showWidthControls)}
+                className="flex items-center space-x-1 sm:space-x-2"
+                title="Adjust panel widths"
+              >
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Layout</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleChunkRewrite}
                 className="flex items-center space-x-1 sm:space-x-2"
               >
@@ -540,9 +603,122 @@ export default function LivingBook() {
         </div>
       </header>
 
+      {/* Width Control Panel */}
+      {showWidthControls && (
+        <div className="bg-card border-b border-border shadow-sm">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Navigation Panel Controls */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">Navigation Panel Width</h3>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-muted-foreground w-16">Mobile:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustNavWidth('mobile', 'decrease')}
+                    className="h-7 px-2"
+                  >
+                    -
+                  </Button>
+                  <span className="w-12 text-center text-xs bg-muted px-2 py-1 rounded">
+                    {navWidth.mobile}px
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustNavWidth('mobile', 'increase')}
+                    className="h-7 px-2"
+                  >
+                    +
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-muted-foreground w-16">Desktop:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustNavWidth('desktop', 'decrease')}
+                    className="h-7 px-2"
+                  >
+                    -
+                  </Button>
+                  <span className="w-12 text-center text-xs bg-muted px-2 py-1 rounded">
+                    {navWidth.desktop}px
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustNavWidth('desktop', 'increase')}
+                    className="h-7 px-2"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+
+              {/* Chat Panel Controls */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">AI Chat Panel Width</h3>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-muted-foreground w-16">Mobile:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustChatWidth('mobile', 'decrease')}
+                    className="h-7 px-2"
+                  >
+                    -
+                  </Button>
+                  <span className="w-12 text-center text-xs bg-muted px-2 py-1 rounded">
+                    {chatWidth.mobile}px
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustChatWidth('mobile', 'increase')}
+                    className="h-7 px-2"
+                  >
+                    +
+                  </Button>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-muted-foreground w-16">Desktop:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustChatWidth('desktop', 'decrease')}
+                    className="h-7 px-2"
+                  >
+                    -
+                  </Button>
+                  <span className="w-12 text-center text-xs bg-muted px-2 py-1 rounded">
+                    {chatWidth.desktop}px
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => adjustChatWidth('desktop', 'increase')}
+                    className="h-7 px-2"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 text-xs text-muted-foreground">
+              Note: The main text area automatically adjusts to fill the remaining space between navigation and chat panels.
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex max-w-none w-full main-content-with-bottom-bar">
-        {/* Navigation Sidebar - MOBILE FIX: Wider for readability, normal on desktop */}
-        <div className="w-20 md:w-60 flex-shrink-0">
+        {/* Navigation Sidebar - Adjustable Width */}
+        <div 
+          className="flex-shrink-0"
+          style={getNavWidthStyle()}
+        >
           <NavigationSidebar />
         </div>
 
@@ -567,8 +743,11 @@ export default function LivingBook() {
           />
         </main>
 
-        {/* Chat Panel - NARROWER: Half the width to give more space to document */}
-        <div className="w-4 md:w-48 flex-shrink-0">
+        {/* Chat Panel - Adjustable Width */}
+        <div 
+          className="flex-shrink-0"
+          style={getChatWidthStyle()}
+        >
           <ChatInterface 
             selectedModel={selectedModel} 
             mathMode={mathMode}
