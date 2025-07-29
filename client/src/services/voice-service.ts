@@ -11,17 +11,9 @@ export class VoiceService {
 
   isSupported(): boolean {
     // Check if MediaRecorder is available (supported in most modern browsers)
-    const hasMediaRecorder = typeof MediaRecorder !== 'undefined';
-    const hasMediaDevices = !!navigator.mediaDevices;
-    const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-    
-    console.log('Voice service support check:', {
-      hasMediaRecorder,
-      hasMediaDevices,
-      hasGetUserMedia
-    });
-    
-    return hasMediaRecorder && hasMediaDevices && hasGetUserMedia;
+    return typeof MediaRecorder !== 'undefined' && 
+           !!navigator.mediaDevices && 
+           !!navigator.mediaDevices.getUserMedia;
   }
 
   async startListening(

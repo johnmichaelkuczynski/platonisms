@@ -304,7 +304,15 @@ export default function RewriteModal({
                   <div className="absolute top-2 right-2">
                     <VoiceInputButton
                       onTranscript={(text) => {
-                        setInstructions(text);
+                        // Append to existing instructions instead of replacing
+                        const currentInstructions = instructions.trim();
+                        const newText = text.trim();
+                        
+                        if (currentInstructions && newText) {
+                          setInstructions(currentInstructions + " " + newText);
+                        } else {
+                          setInstructions(newText);
+                        }
                         // Do NOT auto-submit for rewrite modal - just insert text
                       }}
                       disabled={rewriteMutation.isPending}

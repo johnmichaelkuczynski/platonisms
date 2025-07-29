@@ -28,10 +28,6 @@ export default function VoiceInputButton({
   const isSupported = voiceService.isSupported();
 
   useEffect(() => {
-    // Debug speech recognition support
-    console.log('Voice service supported:', isSupported);
-    console.log('SpeechRecognition available:', !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition);
-    
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -117,17 +113,19 @@ export default function VoiceInputButton({
   };
 
   const stopListening = () => {
-    voiceService.stopListening();
-    setIsListening(false);
-    setInterimTranscript('');
-    
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    
+    voiceService.stopListening();
+    setIsListening(false);
+    setInterimTranscript('');
   };
 
   const handleClick = async () => {
+    if (disabled) return;
+    
     if (isListening) {
       stopListening();
     } else {
