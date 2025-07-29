@@ -60,6 +60,8 @@ export default function LivingBook() {
   const [thesisDeepDiveModalOpen, setThesisDeepDiveModalOpen] = useState(false);
   const [selectedTextForThesisDeepDive, setSelectedTextForThesisDeepDive] = useState<string>("");
   const [suggestedReadingsLoading, setSuggestedReadingsLoading] = useState(false);
+  const [summaryWithThesisLoading, setSummaryWithThesisLoading] = useState(false);
+  const [thesisDeepDiveLoading, setThesisDeepDiveLoading] = useState(false);
 
 
 
@@ -212,6 +214,7 @@ export default function LivingBook() {
   };
 
   const handleCreateSummaryWithThesisFromSelection = async (text: string) => {
+    setSummaryWithThesisLoading(true);
     try {
       toast({
         title: "Generating Summary with Thesis",
@@ -260,10 +263,13 @@ export default function LivingBook() {
         description: error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
+    } finally {
+      setSummaryWithThesisLoading(false);
     }
   };
 
   const handleCreateThesisDeepDiveFromSelection = async (text: string) => {
+    setThesisDeepDiveLoading(true);
     try {
       toast({
         title: "Generating Thesis Deep-Dive",
@@ -312,6 +318,8 @@ export default function LivingBook() {
         description: error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
+    } finally {
+      setThesisDeepDiveLoading(false);
     }
   };
 
@@ -554,6 +562,8 @@ export default function LivingBook() {
             onThesisDeepDive={handleCreateThesisDeepDiveFromSelection}
             onSuggestedReadings={handleCreateSuggestedReadingsFromSelection}
             suggestedReadingsLoading={suggestedReadingsLoading}
+            summaryWithThesisLoading={summaryWithThesisLoading}
+            thesisDeepDiveLoading={thesisDeepDiveLoading}
           />
         </main>
 

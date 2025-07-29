@@ -22,6 +22,8 @@ interface DocumentContentProps {
   onThesisDeepDive?: (text: string) => void;
   onSuggestedReadings?: (text: string) => void;
   suggestedReadingsLoading?: boolean;
+  summaryWithThesisLoading?: boolean;
+  thesisDeepDiveLoading?: boolean;
 }
 
 export default function DocumentContent({ 
@@ -36,7 +38,9 @@ export default function DocumentContent({
   onSummaryWithThesis,
   onThesisDeepDive,
   onSuggestedReadings,
-  suggestedReadingsLoading = false
+  suggestedReadingsLoading = false,
+  summaryWithThesisLoading = false,
+  thesisDeepDiveLoading = false
 }: DocumentContentProps) {
   const { selection, isSelecting, clearSelection, highlightSelection, removeHighlights } = useTextSelection();
   const [showChunkingModal, setShowChunkingModal] = useState(false);
@@ -335,6 +339,8 @@ export default function DocumentContent({
           onThesisDeepDive={onThesisDeepDive || (() => {})}
           onSuggestedReadings={onSuggestedReadings || (() => {})}
           suggestedReadingsLoading={suggestedReadingsLoading}
+          summaryWithThesisLoading={summaryWithThesisLoading}
+          thesisDeepDiveLoading={thesisDeepDiveLoading}
           onHighlight={handleHighlight}
           onClear={clearSelection}
         />

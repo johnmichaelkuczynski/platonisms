@@ -15,6 +15,8 @@ interface SelectionToolbarProps {
   onThesisDeepDive: (text: string) => void;
   onSuggestedReadings: (text: string) => void;
   suggestedReadingsLoading?: boolean;
+  summaryWithThesisLoading?: boolean;
+  thesisDeepDiveLoading?: boolean;
   onHighlight: () => void;
   onClear: () => void;
   position?: { x: number; y: number };
@@ -33,6 +35,8 @@ export default function SelectionToolbar({
   onThesisDeepDive,
   onSuggestedReadings,
   suggestedReadingsLoading = false,
+  summaryWithThesisLoading = false,
+  thesisDeepDiveLoading = false,
   onHighlight, 
   onClear, 
   position 
@@ -196,20 +200,34 @@ export default function SelectionToolbar({
         size="sm"
         variant="outline"
         onClick={handleSummaryWithThesis}
-        className="flex items-center space-x-1 text-amber-600 border-amber-200 hover:bg-amber-50"
+        disabled={summaryWithThesisLoading}
+        className="flex items-center space-x-1 text-amber-600 border-amber-200 hover:bg-amber-50 disabled:opacity-60"
       >
-        <Target className="w-3 h-3" />
-        <span className="text-xs">Summary+Thesis</span>
+        {summaryWithThesisLoading ? (
+          <Loader2 className="w-3 h-3 animate-spin" />
+        ) : (
+          <Target className="w-3 h-3" />
+        )}
+        <span className="text-xs">
+          {summaryWithThesisLoading ? "Analyzing..." : "Summary+Thesis"}
+        </span>
       </Button>
 
       <Button
         size="sm"
         variant="outline"
         onClick={handleThesisDeepDive}
-        className="flex items-center space-x-1 text-rose-600 border-rose-200 hover:bg-rose-50"
+        disabled={thesisDeepDiveLoading}
+        className="flex items-center space-x-1 text-rose-600 border-rose-200 hover:bg-rose-50 disabled:opacity-60"
       >
-        <Brain className="w-3 h-3" />
-        <span className="text-xs">Thesis Deep-Dive</span>
+        {thesisDeepDiveLoading ? (
+          <Loader2 className="w-3 h-3 animate-spin" />
+        ) : (
+          <Brain className="w-3 h-3" />
+        )}
+        <span className="text-xs">
+          {thesisDeepDiveLoading ? "Diving Deep..." : "Thesis Deep-Dive"}
+        </span>
       </Button>
 
       <Button
